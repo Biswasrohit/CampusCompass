@@ -213,6 +213,15 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               {userProfile.fullName.charAt(0).toUpperCase()}
             </span>
           </button>
+          {/* Sign out */}
+          <a
+            href="/api/auth/sign-out"
+            className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200"
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <span className="material-symbols-outlined text-on-surface-variant">logout</span>
+          </a>
           {/* Mobile nav */}
           <MobileNav
             activeFilters={activeFilters}

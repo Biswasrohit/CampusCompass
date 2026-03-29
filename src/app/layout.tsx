@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Be_Vietnam_Pro } from "next/font/google";
+import { AuthKitProvider } from "@workos-inc/authkit-nextjs/components";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -36,7 +37,7 @@ export default function RootLayout({
       <body
         className={`${plusJakarta.variable} ${beVietnam.variable} font-body antialiased bg-background text-on-surface`}
       >
-        {children}
+        <AuthKitProvider>{children}</AuthKitProvider>
       </body>
     </html>
   );

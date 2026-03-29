@@ -6,6 +6,7 @@ import { NYC_SCHOOLS } from "@/lib/schools";
 
 interface OnboardingCardProps {
   readonly onSubmit: (profile: UserProfile) => void;
+  readonly prefillName?: string;
 }
 
 const GENDER_OPTIONS = [
@@ -134,8 +135,8 @@ function CustomSelect({ id, value, onChange, options, placeholder, searchable = 
   );
 }
 
-export default function OnboardingCard({ onSubmit }: OnboardingCardProps) {
-  const [fullName, setFullName] = useState("");
+export default function OnboardingCard({ onSubmit, prefillName = "" }: OnboardingCardProps) {
+  const [fullName, setFullName] = useState(prefillName);
   const [school, setSchool] = useState("");
   const [gender, setGender] = useState("");
   const [raceEthnicity, setRaceEthnicity] = useState("");

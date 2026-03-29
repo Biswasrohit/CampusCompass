@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { filterResources, CuratedItem } from "@/lib/gemini";
+import { filterResources, CuratedItem } from "@/lib/openrouter";
 import { searchFromSuggestions } from "@/lib/tavily";
 import { parseResults } from "@/lib/parse-results";
 import { getSchoolByName, getLocationByName } from "@/lib/schools";

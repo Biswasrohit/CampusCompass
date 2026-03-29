@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { chatWithGemini } from "@/lib/gemini";
+import { chatWithOpenRouter } from "@/lib/openrouter";
 import { ChatRequest } from "@/types";
 
 export async function POST(request: Request) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const chatResponse = await chatWithGemini(
+    const chatResponse = await chatWithOpenRouter(
       body.message,
       body.history ?? [],
       body.userProfile,

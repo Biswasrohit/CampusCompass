@@ -11,6 +11,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@tavily/core": "^0.7.2",
+    "@workos-inc/authkit-nextjs": "^3.0.0",
     "leaflet": "^1.9.4",
     "next": "14.2.35",
     "react": "^18",
