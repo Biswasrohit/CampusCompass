@@ -54,7 +54,7 @@ export default function ProfilePage({
             <h1 className="mt-2 font-headline text-3xl font-bold tracking-tight text-on-surface">
               Student preferences
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface/70">
               A lightweight profile editor that keeps personalization available
               without needing a dedicated settings page.
             </p>
@@ -81,7 +81,7 @@ export default function ProfilePage({
                   <h2 className="font-headline text-xl font-bold text-on-surface">
                     {userProfile.fullName}
                   </h2>
-                  <p className="text-sm text-on-surface-variant">
+                  <p className="text-sm text-on-surface/70">
                     Student at {userProfile.school}
                   </p>
                 </div>
@@ -89,7 +89,7 @@ export default function ProfilePage({
 
               <div className="mt-6 space-y-3">
                 <div className="rounded-2xl bg-surface-container-low p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface-variant">
+                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface/70">
                     School
                   </p>
                   <p className="mt-2 text-sm font-semibold text-on-surface">
@@ -97,7 +97,7 @@ export default function ProfilePage({
                   </p>
                 </div>
                 <div className="rounded-2xl bg-surface-container-low p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface-variant">
+                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface/70">
                     Current borough
                   </p>
                   <p className="mt-2 text-sm font-semibold text-on-surface">
@@ -105,7 +105,7 @@ export default function ProfilePage({
                   </p>
                 </div>
                 <div className="rounded-2xl bg-surface-container-low p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface-variant">
+                  <p className="text-xs uppercase tracking-[0.18em] text-on-surface/70">
                     Student focus
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export default function ProfilePage({
                       <p className="text-sm font-semibold text-on-surface">
                         Resource reminders
                       </p>
-                      <p className="mt-1 text-sm text-on-surface-variant">
+                      <p className="mt-1 text-sm text-on-surface/70">
                         Optional preference toggle for the demo wireframe.
                       </p>
                     </div>
@@ -207,7 +207,7 @@ export default function ProfilePage({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface-variant"
+                    className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface/70"
                   >
                     Done
                   </button>

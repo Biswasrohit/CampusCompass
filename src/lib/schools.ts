@@ -25,7 +25,7 @@ export const NYC_SCHOOLS: readonly SchoolInfo[] = [
   { name: 'Manhattan College', lat: 40.8897, lng: -73.9025 },
 ] as const;
 
-export const NYC_AREAS: readonly SchoolInfo[] = [
+const NYC_AREAS: readonly SchoolInfo[] = [
   // Manhattan
   { name: 'Manhattan - Upper East Side', lat: 40.7736, lng: -73.9566 },
   { name: 'Manhattan - Upper West Side', lat: 40.7870, lng: -73.9754 },

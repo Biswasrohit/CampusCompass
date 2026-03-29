@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { UserProfile, Resource, Category } from "@/types";
+import { UserProfile, Resource } from "@/types";
 import { getSchoolByName, getLocationByName } from "@/lib/schools";
 import { useResources } from "@/hooks/useResources";
 import { useChat } from "@/hooks/useChat";
@@ -22,7 +22,7 @@ const MapView = dynamic(() => import("./MapView"), {
     <div className="flex h-full w-full items-center justify-center bg-surface-container-low/50">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-        <span className="text-sm text-on-surface-variant">Loading map...</span>
+        <span className="text-sm text-on-surface/70">Loading map...</span>
       </div>
     </div>
   ),
@@ -136,10 +136,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     [pinnedIds, resources]
   );
 
-  const activeFilterList = useMemo(
-    () => Array.from(activeFilters) as Category[],
-    [activeFilters]
-  );
 
   function handleSearch(query: string) {
     setCurrentQuery(query || undefined);
@@ -195,7 +191,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
         style={{ backgroundImage: `url('${BG_PHOTO}')` }}
       />
       {/* Warm overlay so text stays readable */}
-      <div className="fixed inset-0 z-0 bg-[#1C1917]/45" />
+      <div className="fixed inset-0 z-0 bg-[#1C1917]/70" />
 
       {/* ── Top Navigation Bar ── */}
       <header className="fixed top-0 w-full z-50 flex items-center gap-3 px-4 md:px-6 h-[60px] bg-surface/80 backdrop-blur-xl border-b border-white/10">
@@ -305,7 +301,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               className={`rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeView === view
                   ? "bg-primary text-on-primary"
-                  : "bg-surface-container/80 text-on-surface-variant"
+                  : "bg-surface-container/80 text-on-surface/70"
               }`}
             >
               {view === "explore" ? "Explore" : view === "resources" ? "Saved" : "Insights"}
@@ -467,9 +463,8 @@ export default function Dashboard({ userProfile }: DashboardProps) {
 
             {activeView === "analytics" ? (
               <InsightsPage
+                pinnedResources={pinnedResources}
                 exploredCount={resources.length}
-                pinnedCount={pinnedResources.length}
-                activeFilters={activeFilterList}
               />
             ) : null}
           </div>

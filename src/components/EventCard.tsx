@@ -42,7 +42,7 @@ export default function EventCard({ resource, style, pinned = false, onTogglePin
             <h4 className="text-sm font-semibold text-on-surface leading-tight mb-0.5 line-clamp-2 group-hover:text-primary transition-colors tracking-wide">
               {resource.title}
             </h4>
-            <p className="text-xs text-on-surface-variant line-clamp-1 leading-snug mb-1.5">
+            <p className="text-xs text-on-surface/70 line-clamp-1 leading-snug mb-1.5">
               {resource.description}
             </p>
             <div className="flex items-center gap-2 flex-wrap">
@@ -54,7 +54,7 @@ export default function EventCard({ resource, style, pinned = false, onTogglePin
                 {CATEGORY_LABELS[resource.category]}
               </span>
               {resource.location && (
-                <span className="text-[11px] text-on-surface-variant flex items-center gap-0.5">
+                <span className="text-[11px] text-on-surface/70 flex items-center gap-0.5">
                   <span className="material-symbols-outlined" style={{ fontSize: "11px" }}>location_on</span>
                   {resource.location}
                 </span>
@@ -159,7 +159,7 @@ export default function EventCard({ resource, style, pinned = false, onTogglePin
         {resource.title}
       </h4>
 
-      <div className="flex items-center gap-3 text-on-surface-variant text-xs">
+      <div className="flex items-center gap-3 text-on-surface/70 text-xs">
         <div className="flex items-center gap-1">
           <span className="material-symbols-outlined" style={{ fontSize: "13px" }}>location_on</span>
           <span>{resource.location}</span>

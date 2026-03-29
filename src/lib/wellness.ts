@@ -1,4 +1,4 @@
-export interface WellnessSource {
+interface WellnessSource {
   readonly domain: string;
   readonly name: string;
   readonly tags: readonly string[];

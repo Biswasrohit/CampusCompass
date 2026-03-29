@@ -1,4 +1,4 @@
-export interface ScholarshipSource {
+interface ScholarshipSource {
   readonly domain: string;
   readonly name: string;
   readonly tags: readonly string[];

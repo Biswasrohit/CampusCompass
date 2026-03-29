@@ -22,7 +22,7 @@ export default function MyResourcesPage({
         <h1 className="mt-2 font-headline text-3xl font-bold tracking-tight text-on-surface">
           Your saved resources
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface/70">
           Pin scholarships, wellness support, food resources, and campus services from Explore to keep them in one place.
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function MyResourcesPage({
             <h2 className="mt-5 font-headline text-2xl font-bold text-on-surface">
               No pinned resources yet
             </h2>
-            <p className="mt-3 max-w-md text-sm leading-6 text-on-surface-variant">
+            <p className="mt-3 max-w-md text-sm leading-6 text-on-surface/70">
               Pin resources from Explore to build a shortlist of support options
               you want to revisit.
             </p>
@@ -73,7 +73,7 @@ export default function MyResourcesPage({
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2 text-xs text-on-surface-variant">
+                <div className="mt-4 flex flex-wrap gap-2 text-xs text-on-surface/70">
                   <div className="inline-flex items-center gap-1 rounded-full bg-surface-container px-3 py-1.5">
                     <span className="material-symbols-outlined text-sm">location_on</span>
                     <span>{resource.location}</span>
@@ -86,7 +86,7 @@ export default function MyResourcesPage({
                   )}
                 </div>
 
-                <p className="mt-4 text-sm leading-6 text-on-surface-variant">
+                <p className="mt-4 text-sm leading-6 text-on-surface/70">
                   {resource.description}
                 </p>
 

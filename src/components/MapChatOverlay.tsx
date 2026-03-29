@@ -68,7 +68,7 @@ export default function MapChatOverlay({
                 <div className="rounded-2xl overflow-hidden h-32 bg-primary-container/30 flex items-center justify-center">
                   <div className="w-full h-full bg-gradient-to-br from-primary/20 via-surface-container to-primary-container/40 flex flex-col items-center justify-center gap-2">
                     <span className="material-symbols-outlined text-primary/60" style={{ fontSize: "32px", fontVariationSettings: "'FILL' 1" }}>school</span>
-                    <p className="text-xs text-on-surface-variant font-body">NYC Campus Resources</p>
+                    <p className="text-xs text-on-surface/70 font-body">NYC Campus Resources</p>
                   </div>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function MapChatOverlay({
                     type="text"
                     placeholder="Ask a question..."
                     maxLength={500}
-                    className="flex-1 bg-transparent text-sm text-on-surface placeholder:text-on-surface-variant/50 outline-none min-w-0"
+                    className="flex-1 bg-transparent text-sm text-on-surface placeholder:text-on-surface/40 outline-none min-w-0"
                   />
                   <button
                     type="submit"

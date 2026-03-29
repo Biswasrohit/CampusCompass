@@ -28,7 +28,7 @@ export default function SearchBar({ onSearch, loading }: SearchBarProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search resources, scholarships..."
-          className="w-full bg-surface-container-low border border-outline-variant/25 rounded-xl pl-10 pr-4 h-9 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-surface-container-lowest transition-all outline-none"
+          className="w-full bg-surface-container-low border border-outline-variant/25 rounded-xl pl-10 pr-4 h-9 text-sm text-on-surface placeholder:text-on-surface/40 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-surface-container-lowest transition-all outline-none"
         />
         {loading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">

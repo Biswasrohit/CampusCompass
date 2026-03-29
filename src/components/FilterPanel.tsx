@@ -34,8 +34,6 @@ export default function FilterPanel({
   onLocationChange,
   onRefresh,
   loading = false,
-  collapsed = false,
-  onToggleCollapse,
 }: FilterPanelProps) {
   return (
     <div className="flex h-full flex-col relative">
@@ -52,7 +50,7 @@ export default function FilterPanel({
             </h2>
           </div>
         </div>
-        <p className="text-xs text-on-surface-variant pl-7">Show New York City</p>
+        <p className="text-xs text-on-surface/70 pl-7">Show New York City</p>
       </div>
 
       <div className="px-4 pt-4 space-y-5 flex-1 overflow-y-auto hide-scrollbar">
@@ -130,7 +128,7 @@ export default function FilterPanel({
 
         {/* Category icon cards — 2-column grid */}
         <div>
-          <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider font-headline block mb-3">
+          <span className="text-xs font-bold text-on-surface/70 uppercase tracking-wider font-headline block mb-3">
             Filter category
           </span>
 
@@ -174,7 +172,7 @@ export default function FilterPanel({
                   {/* Label */}
                   <span
                     className={`text-[11px] text-center leading-tight tracking-wide transition-colors ${
-                      isActive ? "font-bold text-on-surface" : "font-medium text-on-surface-variant"
+                      isActive ? "font-bold text-on-surface" : "font-medium text-on-surface/60"
                     }`}
                   >
                     {CATEGORY_FULL_LABELS[category]}
@@ -190,11 +188,11 @@ export default function FilterPanel({
       <div className="px-5 py-4 border-t border-white/10 mt-auto shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex gap-3">
-            <button className="text-[10px] text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
+            <button className="text-[10px] text-on-surface/60 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
               Privacy
             </button>
-            <span className="text-on-surface-variant/30 text-xs">·</span>
-            <button className="text-[10px] text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
+            <span className="text-on-surface/30 text-xs">·</span>
+            <button className="text-[10px] text-on-surface/60 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
               Terms
             </button>
           </div>

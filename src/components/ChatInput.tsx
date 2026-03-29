@@ -41,7 +41,7 @@ function formatMessage(content: string): ReactNode {
     if (bulletMatch) {
       bulletGroup.push(
         <li key={`li-${i}`} className="flex gap-1.5">
-          <span className="mt-0.5 shrink-0 text-[10px] text-on-surface-variant">
+          <span className="mt-0.5 shrink-0 text-[10px] text-on-surface/70">
             •
           </span>
           <span>{parseBoldSegments(bulletMatch[1])}</span>
@@ -97,7 +97,7 @@ export default function ChatInput({
         className="hide-scrollbar flex-1 space-y-3 overflow-y-auto"
       >
         {messages.length === 0 && (
-          <p className="text-center text-xs text-on-surface-variant">
+          <p className="text-center text-xs text-on-surface/70">
             Ask about resources near your school...
           </p>
         )}
@@ -144,7 +144,7 @@ export default function ChatInput({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask anything..."
           maxLength={500}
-          className="min-w-0 flex-1 rounded-lg bg-surface-container border-none px-3 py-2 text-xs text-on-surface placeholder:text-on-surface-variant/60 focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary outline-none transition-all"
+          className="min-w-0 flex-1 rounded-lg bg-surface-container border-none px-3 py-2 text-xs text-on-surface placeholder:text-on-surface/40 focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary outline-none transition-all"
         />
         <button
           type="submit"

@@ -1,4 +1,4 @@
-export interface OpportunitySource {
+interface OpportunitySource {
   readonly domain: string;
   readonly name: string;
   readonly tags: readonly string[];

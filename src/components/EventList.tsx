@@ -60,7 +60,7 @@ export default function EventList({
           </h3>
           {currentQuery && !loading && (
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-xs text-on-surface-variant">
+              <span className="text-xs text-on-surface/70">
                 Showing: <span className="font-semibold text-primary">{currentQuery}</span>
               </span>
               {onReset && (
@@ -89,7 +89,7 @@ export default function EventList({
           </div>
         ) : resources.length === 0 ? (
           <div className="flex flex-col gap-3 py-3">
-            <p className="text-xs text-on-surface-variant px-1">
+            <p className="text-xs text-on-surface/70 px-1">
               {currentQuery ? "No matches — try a different term or browse by category:" : "Browse by category to get started:"}
             </p>
             <div className="flex flex-wrap gap-2">
