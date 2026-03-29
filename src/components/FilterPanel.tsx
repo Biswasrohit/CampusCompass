@@ -15,6 +15,8 @@ interface FilterPanelProps {
   readonly onLocationChange?: (location: string) => void;
   readonly onRefresh?: () => void;
   readonly loading?: boolean;
+  readonly collapsed?: boolean;
+  readonly onToggleCollapse?: () => void;
 }
 
 const CATEGORIES: readonly Category[] = [
@@ -32,28 +34,29 @@ export default function FilterPanel({
   onLocationChange,
   onRefresh,
   loading = false,
+  collapsed = false,
+  onToggleCollapse,
 }: FilterPanelProps) {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col relative">
+
       {/* Header */}
-      <div className="px-5 pt-5 pb-4 border-b border-outline-variant/20">
+      <div className="px-5 pt-5 pb-4 border-b border-white/10 shrink-0">
         <div className="flex items-start justify-between mb-0.5">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary" style={{ fontSize: "18px" }}>
               location_on
             </span>
-            <h2 className="text-[15px] font-bold font-headline text-on-surface tracking-tight">
+            <h2 className="text-[15px] font-bold font-headline text-on-surface">
               Resource Finder
             </h2>
           </div>
-          <button className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors">
-            <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: "16px" }}>more_horiz</span>
-          </button>
         </div>
         <p className="text-xs text-on-surface-variant pl-7">Show New York City</p>
       </div>
 
-      <div className="px-4 pt-4 space-y-4 flex-1">
+      <div className="px-4 pt-4 space-y-5 flex-1 overflow-y-auto hide-scrollbar">
+
         {/* Location selector */}
         {selectedLocation && onLocationChange && (
           <div className="space-y-2.5">
@@ -64,7 +67,7 @@ export default function FilterPanel({
               <select
                 value={selectedLocation}
                 onChange={(e) => onLocationChange(e.target.value)}
-                className="w-full appearance-none bg-surface-container-low border border-outline-variant/30 rounded-xl pl-8 pr-8 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 cursor-pointer font-medium transition-all"
+                className="w-full appearance-none bg-surface-container-low/80 border border-outline-variant/30 rounded-xl pl-8 pr-8 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 cursor-pointer font-medium transition-all"
               >
                 <optgroup label="Your School">
                   {ALL_LOCATIONS.filter(loc =>
@@ -125,17 +128,13 @@ export default function FilterPanel({
           </div>
         )}
 
-        {/* Category filters */}
+        {/* Category icon cards — 2-column grid */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider font-headline">
-              Filter category
-            </span>
-            <button className="w-5 h-5 flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: "14px" }}>more_horiz</span>
-            </button>
-          </div>
-          <div className="space-y-0.5">
+          <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider font-headline block mb-3">
+            Filter category
+          </span>
+
+          <div className="grid grid-cols-2 gap-2">
             {CATEGORIES.map((category) => {
               const isActive = activeFilters.has(category);
               const color = CATEGORY_COLORS[category];
@@ -143,49 +142,43 @@ export default function FilterPanel({
                 <button
                   key={category}
                   onClick={() => onToggle(category)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 group ${
+                  className={`flex flex-col items-center gap-2.5 p-3 rounded-2xl border transition-all duration-200 active:scale-95 group ${
                     isActive
-                      ? "bg-surface-container"
-                      : "hover:bg-surface-container-low"
+                      ? "bg-surface-container-lowest/90 border-outline-variant/30 shadow-card"
+                      : "bg-surface-container-low/40 border-white/10 hover:bg-surface-container-low/70 hover:border-outline-variant/20"
                   }`}
                 >
-                  {/* Icon square */}
+                  {/* Neumorphic icon tile */}
                   <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-150"
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                      isActive
+                        ? "shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),0_2px_8px_rgba(0,0,0,0.08)]"
+                        : "shadow-[inset_0_1px_2px_rgba(255,255,255,0.5),0_1px_4px_rgba(0,0,0,0.06)]"
+                    }`}
                     style={{
-                      backgroundColor: isActive ? color : `${color}18`,
+                      backgroundColor: isActive ? `${color}15` : "rgba(254,252,248,0.7)",
                     }}
                   >
                     <span
-                      className="material-symbols-outlined"
+                      className="material-symbols-outlined transition-all duration-200"
                       style={{
-                        fontSize: "15px",
-                        color: isActive ? "white" : color,
-                        fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
+                        fontSize: "22px",
+                        color: isActive ? color : "#8A847C",
+                        fontVariationSettings: "'FILL' 1",
                       }}
                     >
                       {CATEGORY_ICONS[category]}
                     </span>
                   </div>
 
-                  <span className={`flex-1 text-sm text-left transition-colors tracking-wide ${
-                    isActive ? "text-on-surface font-semibold" : "text-on-surface-variant font-medium"
-                  }`}>
+                  {/* Label */}
+                  <span
+                    className={`text-[11px] text-center leading-tight tracking-wide transition-colors ${
+                      isActive ? "font-bold text-on-surface" : "font-medium text-on-surface-variant"
+                    }`}
+                  >
                     {CATEGORY_FULL_LABELS[category]}
                   </span>
-
-                  {/* Checkbox */}
-                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-150 ${
-                    isActive
-                      ? "border-transparent"
-                      : "border-outline-variant"
-                  }`} style={{ backgroundColor: isActive ? color : "transparent" }}>
-                    {isActive && (
-                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                        <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </div>
                 </button>
               );
             })}
@@ -194,7 +187,7 @@ export default function FilterPanel({
       </div>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-outline-variant/20 mt-auto">
+      <div className="px-5 py-4 border-t border-white/10 mt-auto shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex gap-3">
             <button className="text-[10px] text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">

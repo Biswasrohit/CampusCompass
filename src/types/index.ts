@@ -71,10 +71,10 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 export const CATEGORY_ICONS: Record<Category, string> = {
-  scholarships: "school",
-  "mental-health": "psychology",
-  "food-security": "restaurant",
-  housing: "home_work",
+  scholarships: "menu_book",
+  "mental-health": "medical_services",
+  "food-security": "grocery",
+  housing: "home",
   "career-prep": "work",
 };
 

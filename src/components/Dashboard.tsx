@@ -55,6 +55,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [pinnedIds, setPinnedIds] = useState<ReadonlySet<string>>(new Set());
   const [showAvatarCard, setShowAvatarCard] = useState(false);
+  const [filterCollapsed, setFilterCollapsed] = useState(false);
   const bottomSheetRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
 
@@ -192,13 +193,29 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           onClick={() => setActiveView("explore")}
           className="flex items-center gap-2 shrink-0"
         >
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-button">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-white">
-              <path d="M8 1.5A6.5 6.5 0 1 1 8 14.5A6.5 6.5 0 0 1 8 1.5Z" stroke="currentColor" strokeWidth="1.2" fill="none"/>
-              <path d="M8 4.5L9.5 8L8 11.5L6.5 8L8 4.5Z" fill="currentColor"/>
-              <circle cx="8" cy="8" r="1" fill="white"/>
-            </svg>
-          </div>
+          <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="globe-clip">
+                <circle cx="50" cy="50" r="40"/>
+              </clipPath>
+            </defs>
+            <circle cx="50" cy="50" r="40" fill="#EBF4F0"/>
+            <g clipPath="url(#globe-clip)" stroke="#B8D5C8" strokeWidth="2.5" fill="none">
+              <line x1="0" y1="26" x2="100" y2="26"/>
+              <line x1="0" y1="38" x2="100" y2="38"/>
+              <line x1="0" y1="50" x2="100" y2="50"/>
+              <line x1="0" y1="62" x2="100" y2="62"/>
+              <line x1="0" y1="74" x2="100" y2="74"/>
+              <line x1="26" y1="0" x2="26" y2="100"/>
+              <line x1="38" y1="0" x2="38" y2="100"/>
+              <line x1="50" y1="0" x2="50" y2="100"/>
+              <line x1="62" y1="0" x2="62" y2="100"/>
+              <line x1="74" y1="0" x2="74" y2="100"/>
+            </g>
+            <circle cx="50" cy="50" r="40" stroke="#2A5C45" strokeWidth="8" fill="none"/>
+            <path d="M50 3 L56 44 L97 50 L56 56 L50 97 L44 56 L3 50 L44 44 Z" fill="#2A5C45"/>
+            <circle cx="50" cy="50" r="5" fill="white"/>
+          </svg>
           <span className="font-headline text-[17px] font-bold text-on-surface">
             CampusCompass
           </span>
@@ -295,20 +312,48 @@ export default function Dashboard({ userProfile }: DashboardProps) {
         <main className="flex flex-1 pt-[60px] overflow-hidden relative z-10">
 
           {/* LEFT: Filter Panel — frosted glass */}
-          <aside className="hidden md:flex fixed left-0 top-[60px] bottom-0 w-[272px] flex-col border-r border-white/10 overflow-y-auto hide-scrollbar bg-surface/85 backdrop-blur-xl">
-            <FilterPanel
-              activeFilters={activeFilters}
-              onToggle={toggleFilter}
-              selectedLocation={selectedLocation}
-              onLocationChange={handleLocationChange}
-              onRefresh={handleRefreshSearch}
-              loading={loading}
-            />
+          <aside
+            className={`hidden md:flex fixed left-0 top-[60px] bottom-0 flex-col border-r border-white/10 bg-surface/85 backdrop-blur-xl transition-all duration-300 overflow-hidden ${
+              filterCollapsed ? "w-0 border-r-0" : "w-[272px]"
+            }`}
+          >
+            <div className="w-[272px] h-full overflow-y-auto hide-scrollbar">
+              <FilterPanel
+                activeFilters={activeFilters}
+                onToggle={toggleFilter}
+                selectedLocation={selectedLocation}
+                onLocationChange={handleLocationChange}
+                onRefresh={handleRefreshSearch}
+                loading={loading}
+                collapsed={filterCollapsed}
+                onToggleCollapse={() => setFilterCollapsed((v) => !v)}
+              />
+            </div>
           </aside>
 
+          {/* Filter collapse/expand tab — always visible, sits at the panel edge */}
+          <button
+            onClick={() => setFilterCollapsed((v) => !v)}
+            className={`hidden md:flex fixed top-1/2 -translate-y-1/2 z-30 w-5 h-14 bg-surface/90 backdrop-blur-sm border border-white/20 rounded-r-xl items-center justify-center hover:bg-surface-container transition-all duration-300 shadow-sm ${
+              filterCollapsed ? "left-0" : "left-[272px]"
+            }`}
+            aria-label={filterCollapsed ? "Open filters" : "Close filters"}
+          >
+            <span
+              className="material-symbols-outlined text-on-surface-variant transition-transform duration-300"
+              style={{ fontSize: "13px", transform: filterCollapsed ? "rotate(0deg)" : "rotate(180deg)" }}
+            >
+              chevron_right
+            </span>
+          </button>
+
           {/* CENTER: Map + Resource List */}
-          <section className="md:ml-[272px] flex-1 flex flex-col overflow-hidden p-3 md:p-4 gap-3 mt-[52px] md:mt-0">
-            {/* Map container — the star of the show */}
+          <section
+            className={`md:mr-[300px] flex-1 flex flex-col overflow-hidden p-3 md:p-4 gap-3 mt-[52px] md:mt-0 transition-all duration-300 ${
+              filterCollapsed ? "md:ml-0" : "md:ml-[272px]"
+            }`}
+          >
+            {/* Map container */}
             <div className="relative flex-none rounded-2xl overflow-hidden shadow-panel" style={{ height: "55%" }}>
               <MapView resources={resources} center={center} />
 
@@ -322,13 +367,16 @@ export default function Dashboard({ userProfile }: DashboardProps) {
                 </button>
               </div>
 
-              {/* Chat overlay — floating over map */}
-              <MapChatOverlay
-                messages={messages}
-                loading={chatLoading}
-                onSend={sendMessage}
-                userProfile={userProfile}
-              />
+              {/* Mobile chat overlay */}
+              <div className="md:hidden">
+                <MapChatOverlay
+                  messages={messages}
+                  loading={chatLoading}
+                  onSend={sendMessage}
+                  userProfile={userProfile}
+                  mode="overlay"
+                />
+              </div>
             </div>
 
             {/* Resource list below map — frosted glass */}
@@ -352,6 +400,17 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               {showBottomSheet ? "Show Map" : `View Resources (${resources.length})`}
             </button>
           </section>
+
+          {/* RIGHT: Chat Panel (desktop only) */}
+          <aside className="hidden md:flex fixed right-0 top-[60px] bottom-0 w-[300px] flex-col bg-surface/85 backdrop-blur-xl border-l border-white/10">
+            <MapChatOverlay
+              messages={messages}
+              loading={chatLoading}
+              onSend={sendMessage}
+              userProfile={userProfile}
+              mode="panel"
+            />
+          </aside>
 
           {/* Mobile bottom sheet */}
           {showBottomSheet && (
