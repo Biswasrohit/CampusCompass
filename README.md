@@ -8,7 +8,7 @@ CampusCompass is an AI-powered financial navigator for NYC college students. Stu
 
 Every year, billions of dollars in scholarships, grants, and financial aid go unclaimed. Too many students, especially first-generation and low-income students, never find the support available to them because the information is scattered, hard to search, and rarely personalized.
 
-We built CampusCompass because finding financial support should not require knowing the right person or spending hours piecing together resources across dozens of websites. It should take minutes.
+We built CampusCompass because finding financial support should not require knowing the right person or spending hours piecing together resources across dozens of websites.
 
 ## What It Does
 
