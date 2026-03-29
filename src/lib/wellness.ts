@@ -54,21 +54,6 @@ export const WELLNESS_SOURCES: readonly WellnessSource[] = [
   // Campus-adjacent wellness
   { domain: "jedfoundation.org", name: "JED Foundation", tags: ["general"] },
   { domain: "activeminds.org", name: "Active Minds", tags: ["general"] },
-  { domain: "halfofus.com", name: "Half of Us", tags: ["general"] },
-  { domain: "ulifeline.org", name: "ULifeline", tags: ["general"] },
-  { domain: "mindyourmind.org", name: "Mind Your Mind", tags: ["general"] },
-  { domain: "thetrevorproject.org", name: "TrevorSpace", tags: ["LGBTQ+"] },
-
-  // Physical wellness & basic needs
-  { domain: "feedingamerica.org", name: "Feeding America", tags: ["general"] },
-  { domain: "swipehunger.org", name: "Swipe Out Hunger", tags: ["general"] },
-  { domain: "getfed.org", name: "GetFed (Campus Food Pantries)", tags: ["general"] },
-  { domain: "onedegree.org", name: "One Degree (Student Resources)", tags: ["general"] },
-  { domain: "nafcclinics.org", name: "NAFC Free Clinics", tags: ["general"] },
-  { domain: "plannedparenthood.org", name: "Planned Parenthood", tags: ["general"] },
-  { domain: "findahealthcenter.hrsa.gov", name: "HRSA Health Centers", tags: ["general"] },
-  { domain: "foodbanknyc.org", name: "Food Bank NYC", tags: ["general"] },
-  { domain: "cityharvest.org", name: "City Harvest", tags: ["general"] },
 
   // Substance use & recovery
   { domain: "samhsa.gov", name: "SAMHSA Helpline", tags: ["general"] },
@@ -80,26 +65,6 @@ export const WELLNESS_SOURCES: readonly WellnessSource[] = [
 
   // Sleep & stress
   { domain: "sleepfoundation.org", name: "Sleep Foundation", tags: ["general"] },
-  { domain: "adaa.org", name: "Anxiety & Depression Association of America", tags: ["general"] },
-  { domain: "stress.org", name: "American Institute of Stress", tags: ["general"] },
-  { domain: "ptsd.va.gov", name: "VA PTSD Resources", tags: ["general"] },
-
-  // Financial wellness (stress reduction)
-  { domain: "studentloanborrowerassistance.org", name: "Student Loan Borrower Assistance", tags: ["general"] },
-  { domain: "everfi.com", name: "EverFi Financial Wellness", tags: ["general"] },
-  { domain: "cafecollege.org", name: "CafeCollege Financial Aid", tags: ["general"] },
-  { domain: "nclc.org", name: "National Consumer Law Center", tags: ["general"] },
-
-  // Student veteran support
-  { domain: "studentveterans.org", name: "Student Veterans of America", tags: ["general"] },
-  { domain: "va.gov", name: "VA Education Benefits", tags: ["general"] },
-  { domain: "vets.gov", name: "Vets.gov", tags: ["general"] },
-
-  // Disability & accessibility
-  { domain: "aapd.com", name: "American Association of People with Disabilities", tags: ["general"] },
-  { domain: "dyslexiaida.org", name: "International Dyslexia Association", tags: ["general"] },
-  { domain: "chadd.org", name: "CHADD (ADHD Support)", tags: ["general"] },
-  { domain: "nami.org", name: "NAMI on Campus", tags: ["general"] },
 ];
 
 export function getWellnessDomains(

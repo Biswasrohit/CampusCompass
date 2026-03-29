@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Resource, CATEGORY_COLORS, CATEGORY_LABELS } from "@/types";
 
 interface EventCardProps {
@@ -5,20 +6,70 @@ interface EventCardProps {
   readonly style?: React.CSSProperties;
 }
 
-const PLACEHOLDER_IMAGES: readonly string[] = [
-  "https://placehold.co/600x300/e4e1ed/5f5e68?text=Resource",
-  "https://placehold.co/600x300/e2e0f9/505064?text=Resource",
-  "https://placehold.co/600x300/f9d0fc/624367?text=Resource",
-  "https://placehold.co/600x300/f6f2fb/32323b?text=Resource",
-  "https://placehold.co/600x300/eae7f1/5f5e68?text=Resource",
-];
+function getPreviewUrl(url: string): string {
+  try {
+    return `https://api.microlink.io/?url=${encodeURIComponent(
+      url
+    )}&screenshot=true&meta=false`;
+  } catch {
+    return "";
+  }
+}
 
-function getPlaceholderImage(id: string): string {
-  const index = id.charCodeAt(0) % PLACEHOLDER_IMAGES.length;
-  return PLACEHOLDER_IMAGES[index];
+function getInitials(title: string): string {
+  return title
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() || "")
+    .join("");
+}
+
+function getRandomGradient(id: string): string {
+  const gradients = [
+    "from-indigo-500 to-purple-600",
+    "from-blue-500 to-cyan-600",
+    "from-emerald-500 to-teal-600",
+    "from-orange-500 to-amber-600",
+    "from-pink-500 to-rose-600",
+    "from-violet-500 to-fuchsia-600",
+  ];
+  const index = id.charCodeAt(0) % gradients.length;
+  return gradients[index];
 }
 
 export default function EventCard({ resource, style }: EventCardProps) {
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    const fetchPreview = async () => {
+      const apiUrl = getPreviewUrl(resource.url);
+      if (!apiUrl) {
+        setLoading(false);
+        setImageError(true);
+        return;
+      }
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data?.data?.screenshot?.url) {
+          setPreviewUrl(data.data.screenshot.url);
+        } else {
+          setImageError(true);
+        }
+      } catch {
+        setImageError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPreview();
+  }, [resource.url]);
+
+  const showFallback = !previewUrl || imageError;
   return (
     <a
       href={resource.url}
@@ -29,11 +80,28 @@ export default function EventCard({ resource, style }: EventCardProps) {
     >
       {/* Image thumbnail */}
       <div className="relative h-40 w-full rounded-2xl overflow-hidden mb-3">
-        <img
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          src={getPlaceholderImage(resource.id)}
-          alt={resource.title}
-        />
+        {showFallback ? (
+          <div
+            className={`w-full h-full bg-gradient-to-br ${getRandomGradient(
+              resource.id
+            )} flex items-center justify-center`}
+          >
+            <span className="text-4xl font-bold text-white/90">
+              {getInitials(resource.title)}
+            </span>
+          </div>
+        ) : loading ? (
+          <div className="w-full h-full bg-surface-container-low flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        ) : (
+          <img
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            src={previewUrl}
+            alt={resource.title}
+            onError={() => setImageError(true)}
+          />
+        )}
         {/* Category badge */}
         <div className="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
           <span
