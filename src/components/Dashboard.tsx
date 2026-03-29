@@ -19,8 +19,11 @@ import ProfilePage from "./ProfilePage";
 const MapView = dynamic(() => import("./MapView"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center rounded-[2rem] bg-surface-container-low">
-      <div className="text-sm text-on-surface-variant">Loading map...</div>
+    <div className="flex h-full w-full items-center justify-center bg-surface-container-low/50">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <span className="text-sm text-on-surface-variant">Loading map...</span>
+      </div>
     </div>
   ),
 });
@@ -33,6 +36,9 @@ interface DashboardProps {
 
 const PINNED_STORAGE_KEY = "scholar-soft-pinned";
 
+// Central Park background
+const BG_PHOTO = "https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=1920&q=85&auto=format&fit=crop";
+
 export default function Dashboard({ userProfile }: DashboardProps) {
   const {
     resources,
@@ -43,18 +49,17 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     toggleFilter,
   } = useResources();
 
-  // Track current search context - generic (profile-only) or specialized (with topics)
   const [currentQuery, setCurrentQuery] = useState<string | undefined>(undefined);
-
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [activeView, setActiveView] = useState<DashboardView>("explore");
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [pinnedIds, setPinnedIds] = useState<ReadonlySet<string>>(new Set());
+  const [showAvatarCard, setShowAvatarCard] = useState(false);
   const bottomSheetRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
 
   const [selectedLocation, setSelectedLocation] = useState<string>(userProfile.school);
 
-  // Handle topics extracted from chat - refetch resources with the topic as query
   const handleTopicsExtracted = useCallback((topics: readonly string[]) => {
     if (topics.length > 0) {
       const topicQuery = topics.join(" ");
@@ -72,13 +77,11 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     onTopicsExtracted: handleTopicsExtracted,
   });
 
-  // Get current location center for map
   const locationInfo = getLocationByName(selectedLocation) ?? getSchoolByName(userProfile.school);
   const center: [number, number] = locationInfo
     ? [locationInfo.lat, locationInfo.lng]
     : [40.7128, -74.006];
 
-  // Initial load: fetch generic resources based on user profile only
   useEffect(() => {
     fetchResources({
       school: userProfile.school,
@@ -88,7 +91,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     });
   }, [fetchResources, userProfile, selectedLocation]);
 
-  // Load pinned resources from localStorage
   useEffect(() => {
     try {
       const storedPinned = window.localStorage.getItem(PINNED_STORAGE_KEY);
@@ -126,7 +128,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     [activeFilters]
   );
 
-  // Handle manual search from search bar
   function handleSearch(query: string) {
     setCurrentQuery(query || undefined);
     searchResources(query, {
@@ -137,12 +138,10 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     });
   }
 
-  // Handle location change from filter panel
   const handleLocationChange = useCallback((location: string) => {
     setSelectedLocation(location);
   }, []);
 
-  // Handle refresh search with current location
   const handleRefreshSearch = useCallback(() => {
     const query = currentQuery ?? "";
     searchResources(query, {
@@ -162,100 +161,141 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     });
   }, [fetchResources, userProfile]);
 
-  return (
-    <div className="flex h-screen flex-col bg-background overflow-hidden">
-      {/* Top Navigation Bar */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#fcf8fe]/80 backdrop-blur-xl border-b border-surface-variant/20">
-        <div className="flex items-center gap-4 md:gap-8 flex-1">
-          {/* Brand */}
-          <button
-            type="button"
-            onClick={() => setActiveView("explore")}
-            className="text-xl font-bold text-on-surface font-headline tracking-tight whitespace-nowrap"
-          >
-            Scholar Soft
-          </button>
+  // Close avatar card on outside click
+  useEffect(() => {
+    if (!showAvatarCard) return;
+    function handler(e: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setShowAvatarCard(false);
+      }
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showAvatarCard]);
 
-          {/* Search - hidden on mobile, shown on md+ */}
-          <div className="hidden md:block flex-1 max-w-2xl">
-            <SearchBar onSearch={handleSearch} loading={loading} />
+  return (
+    <div className="flex h-screen flex-col overflow-hidden relative">
+
+      {/* ── Background photo ── */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('${BG_PHOTO}')` }}
+      />
+      {/* Warm overlay so text stays readable */}
+      <div className="fixed inset-0 z-0 bg-[#1C1917]/45" />
+
+      {/* ── Top Navigation Bar ── */}
+      <header className="fixed top-0 w-full z-50 flex items-center gap-3 px-4 md:px-6 h-[60px] bg-surface/80 backdrop-blur-xl border-b border-white/10">
+        {/* Brand */}
+        <button
+          type="button"
+          onClick={() => setActiveView("explore")}
+          className="flex items-center gap-2 shrink-0"
+        >
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-button">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-white">
+              <path d="M8 1.5A6.5 6.5 0 1 1 8 14.5A6.5 6.5 0 0 1 8 1.5Z" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+              <path d="M8 4.5L9.5 8L8 11.5L6.5 8L8 4.5Z" fill="currentColor"/>
+              <circle cx="8" cy="8" r="1" fill="white"/>
+            </svg>
           </div>
+          <span className="font-headline text-[17px] font-bold text-on-surface">
+            CampusCompass
+          </span>
+        </button>
+
+        {/* Nav links — centered */}
+        <div className="hidden lg:flex flex-1 justify-center">
+          <AppNav activeView={activeView} onChangeView={setActiveView} />
         </div>
 
-        {/* Nav links - hidden on mobile */}
-        <AppNav activeView={activeView} onChangeView={setActiveView} />
+        {/* Search */}
+        <div className="hidden md:block flex-1 max-w-xs lg:max-w-sm">
+          <SearchBar onSearch={handleSearch} loading={loading} />
+        </div>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2 md:gap-3">
-          <button className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200">
-            <span className="material-symbols-outlined text-on-surface-variant">
-              notifications
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowEditProfile(true)}
-            className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200"
-            aria-label="Edit profile"
-          >
-            <span className="material-symbols-outlined text-on-surface-variant">
-              edit_square
-            </span>
-          </button>
-          {/* Avatar */}
-          <button
-            type="button"
-            onClick={() => setShowEditProfile(true)}
-            className="w-8 h-8 rounded-full overflow-hidden ml-1 ring-2 ring-primary-container bg-primary-container flex items-center justify-center"
-            aria-label="Open profile"
-          >
-            <span className="text-xs font-bold text-on-primary-container">
-              {userProfile.fullName.charAt(0).toUpperCase()}
-            </span>
-          </button>
-          {/* Sign out */}
-          <a
-            href="/api/auth/sign-out"
-            className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200"
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <span className="material-symbols-outlined text-on-surface-variant">logout</span>
-          </a>
-          {/* Mobile nav */}
-          <MobileNav
-            activeFilters={activeFilters}
-            onToggle={toggleFilter}
-          />
+        {/* Avatar + sign-out */}
+        <div className="flex items-center gap-2 ml-auto">
+          <div className="relative" ref={avatarRef}>
+            <button
+              type="button"
+              onClick={() => setShowAvatarCard((v) => !v)}
+              className="flex items-center gap-2.5 rounded-full px-1.5 py-1 hover:bg-surface-container/60 transition-colors duration-150"
+            >
+              <div className="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center ring-2 ring-primary-container/50">
+                <span className="text-xs font-bold text-on-primary-container leading-none">
+                  {userProfile.fullName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="hidden md:block text-left">
+                <p className="text-[12px] font-semibold text-on-surface leading-tight">{userProfile.fullName}</p>
+                <p className="text-[10px] text-on-surface-variant leading-tight">{userProfile.school}</p>
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant hidden md:block" style={{fontSize: "14px"}}>expand_more</span>
+            </button>
+
+            {showAvatarCard && (
+              <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl bg-surface/95 backdrop-blur-xl border border-white/20 shadow-panel p-3 animate-scale-in z-50">
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-outline-variant/20">
+                  <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center">
+                    <span className="text-sm font-bold text-on-primary-container">
+                      {userProfile.fullName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-on-surface font-headline">{userProfile.fullName}</p>
+                    <p className="text-xs text-on-surface-variant">{userProfile.school}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowAvatarCard(false); setShowEditProfile(true); }}
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-surface-container text-sm text-on-surface transition-colors"
+                >
+                  <span className="material-symbols-outlined text-base text-on-surface-variant">edit_square</span>
+                  Edit Preferences
+                </button>
+                <a
+                  href="/api/auth/sign-out"
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-surface-container text-sm text-on-surface transition-colors mt-0.5"
+                >
+                  <span className="material-symbols-outlined text-base text-on-surface-variant">logout</span>
+                  Sign Out
+                </a>
+              </div>
+            )}
+          </div>
+
+          <MobileNav activeFilters={activeFilters} onToggle={toggleFilter} />
         </div>
       </header>
 
-      {/* Mobile search bar + view tabs */}
-      <div className="fixed top-16 left-0 right-0 z-40 px-4 py-2 bg-background/80 backdrop-blur-md md:hidden">
+      {/* ── Mobile search + tabs ── */}
+      <div className="fixed top-[60px] left-0 right-0 z-40 px-4 py-2 bg-surface/80 backdrop-blur-lg border-b border-white/10 md:hidden">
         <SearchBar onSearch={handleSearch} loading={loading} />
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        <div className="mt-2 flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
           {(["explore", "resources", "analytics"] as const).map((view) => (
             <button
               key={view}
               type="button"
               onClick={() => setActiveView(view)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeView === view
                   ? "bg-primary text-on-primary"
-                  : "bg-surface-container-lowest text-on-surface-variant"
+                  : "bg-surface-container/80 text-on-surface-variant"
               }`}
             >
-              {view === "explore" ? "Explore" : view === "resources" ? "My Resources" : "Insights"}
+              {view === "explore" ? "Explore" : view === "resources" ? "Saved" : "Insights"}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main Content Layout */}
+      {/* ── Main Content ── */}
       {activeView === "explore" ? (
-        <main className="flex flex-1 pt-16 overflow-hidden">
-          {/* Left Panel: Filters & AI - hidden on mobile */}
-          <aside className="hidden md:flex fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low flex-col">
+        <main className="flex flex-1 pt-[60px] overflow-hidden relative z-10">
+
+          {/* LEFT: Filter Panel — frosted glass */}
+          <aside className="hidden md:flex fixed left-0 top-[60px] bottom-0 w-[272px] flex-col border-r border-white/10 overflow-y-auto hide-scrollbar bg-surface/85 backdrop-blur-xl">
             <FilterPanel
               activeFilters={activeFilters}
               onToggle={toggleFilter}
@@ -266,22 +306,23 @@ export default function Dashboard({ userProfile }: DashboardProps) {
             />
           </aside>
 
-          {/* Center Panel: Interactive Map */}
-          <section className="md:ml-64 md:mr-[30%] flex-1 h-full relative p-3 md:p-6 mt-12 md:mt-0">
-            <div className="w-full h-full rounded-[2rem] overflow-hidden bg-surface-container-low shadow-inner relative">
+          {/* CENTER: Map + Resource List */}
+          <section className="md:ml-[272px] flex-1 flex flex-col overflow-hidden p-3 md:p-4 gap-3 mt-[52px] md:mt-0">
+            {/* Map container — the star of the show */}
+            <div className="relative flex-none rounded-2xl overflow-hidden shadow-panel" style={{ height: "55%" }}>
               <MapView resources={resources} center={center} />
 
-              {/* Floating zoom controls */}
-              <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-[5]">
-                <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
-                  <span className="material-symbols-outlined">add</span>
+              {/* Zoom controls */}
+              <div className="absolute bottom-4 right-4 flex flex-col gap-1.5 z-[5]">
+                <button className="w-9 h-9 bg-surface-container-lowest/95 backdrop-blur-sm rounded-xl shadow-card flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-colors duration-150 active:scale-95 border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-base">add</span>
                 </button>
-                <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
-                  <span className="material-symbols-outlined">remove</span>
+                <button className="w-9 h-9 bg-surface-container-lowest/95 backdrop-blur-sm rounded-xl shadow-card flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-colors duration-150 active:scale-95 border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-base">remove</span>
                 </button>
               </div>
 
-              {/* AI Chat Overlay */}
+              {/* Chat overlay — floating over map */}
               <MapChatOverlay
                 messages={messages}
                 loading={chatLoading}
@@ -290,46 +331,50 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               />
             </div>
 
-            {/* Mobile bottom sheet toggle */}
-            <button
-              onClick={() => setShowBottomSheet(!showBottomSheet)}
-              className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary text-on-primary px-5 py-2.5 text-xs font-semibold shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
-            >
-              {showBottomSheet
-                ? "Show Map"
-                : `View Resources (${resources.length})`}
-            </button>
-          </section>
-
-          {/* Right Panel: Resource List */}
-          <aside
-            className={`${
-              showBottomSheet
-                ? "fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-3xl shadow-2xl"
-                : "hidden"
-            } w-full bg-surface md:fixed md:right-0 md:top-16 md:bottom-0 md:flex md:w-[30%] md:flex-col md:h-auto md:animate-none md:rounded-none md:shadow-none`}
-          >
-            {/* Drag handle (mobile) */}
-            {showBottomSheet && (
-              <div className="flex justify-center py-2 md:hidden">
-                <div className="h-1 w-8 rounded-full bg-outline-variant" />
-              </div>
-            )}
-            <div
-              ref={bottomSheetRef}
-              className="flex-1 overflow-hidden md:flex md:flex-col"
-            >
+            {/* Resource list below map — frosted glass */}
+            <div className="flex-1 overflow-hidden rounded-2xl bg-surface/88 backdrop-blur-xl border border-white/15 shadow-card">
               <EventList
                 resources={resources}
                 loading={loading}
                 currentQuery={currentQuery}
                 onReset={handleResetToGeneric}
+                selectedLocation={selectedLocation}
+                pinnedIds={pinnedIds}
+                onTogglePinned={handleTogglePinned}
               />
             </div>
-          </aside>
+
+            {/* Mobile bottom sheet toggle */}
+            <button
+              onClick={() => setShowBottomSheet(!showBottomSheet)}
+              className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary text-on-primary px-5 py-2.5 text-xs font-semibold shadow-button transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
+            >
+              {showBottomSheet ? "Show Map" : `View Resources (${resources.length})`}
+            </button>
+          </section>
+
+          {/* Mobile bottom sheet */}
+          {showBottomSheet && (
+            <aside className="fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-3xl shadow-panel bg-surface/95 backdrop-blur-xl md:hidden">
+              <div className="flex justify-center py-2">
+                <div className="h-1 w-8 rounded-full bg-outline-variant" />
+              </div>
+              <div ref={bottomSheetRef} className="flex-1 overflow-hidden h-full">
+                <EventList
+                  resources={resources}
+                  loading={loading}
+                  currentQuery={currentQuery}
+                  onReset={handleResetToGeneric}
+                  selectedLocation={selectedLocation}
+                  pinnedIds={pinnedIds}
+                  onTogglePinned={handleTogglePinned}
+                />
+              </div>
+            </aside>
+          )}
         </main>
       ) : (
-        <main className="min-h-0 flex-1 overflow-hidden bg-[linear-gradient(180deg,#fcf8fe_0%,#f6f2fb_100%)] px-4 pb-4 pt-28 md:px-6 md:pt-24">
+        <main className="min-h-0 flex-1 overflow-hidden px-4 pb-4 pt-24 md:px-6 md:pt-20 relative z-10">
           <div className="mx-auto h-full max-w-7xl">
             {activeView === "resources" ? (
               <MyResourcesPage

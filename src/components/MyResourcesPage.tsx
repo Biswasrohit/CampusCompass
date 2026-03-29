@@ -14,7 +14,7 @@ export default function MyResourcesPage({
   onRemovePinned,
 }: MyResourcesPageProps) {
   return (
-    <section className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-sm">
+    <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-outline-variant/25 bg-surface shadow-card">
       <div className="border-b border-surface-variant/20 px-6 py-6">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
           My Resources
@@ -54,7 +54,7 @@ export default function MyResourcesPage({
             {pinnedResources.map((resource) => (
               <article
                 key={resource.id}
-                className="rounded-[1.75rem] border border-white/70 bg-surface-container-lowest p-5 shadow-sm"
+                className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-card hover:shadow-card-hover transition-shadow"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>

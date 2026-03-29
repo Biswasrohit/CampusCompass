@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Be_Vietnam_Pro } from "next/font/google";
+import { Playfair_Display, Josefin_Sans } from "next/font/google";
 import { AuthKitProvider } from "@workos-inc/authkit-nextjs/components";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-headline",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
 });
 
-const beVietnam = Be_Vietnam_Pro({
+const josefin = Josefin_Sans({
   subsets: ["latin"],
   variable: "--font-body",
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Scholar Soft - Discover Resources Near You",
+  title: "CampusCompass — Discover Resources Near You",
   description:
     "Find scholarships, mental health resources, and learning programs for NYC college students.",
 };
@@ -35,7 +36,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${plusJakarta.variable} ${beVietnam.variable} font-body antialiased bg-background text-on-surface`}
+        className={`${playfair.variable} ${josefin.variable} font-body antialiased bg-background text-on-surface`}
       >
         <AuthKitProvider>{children}</AuthKitProvider>
       </body>

@@ -17,11 +17,15 @@ export default function MapChatOverlay({
   userProfile,
 }: MapChatOverlayProps) {
   return (
-    <div className="pointer-events-none absolute bottom-6 left-1/2 z-[6] w-[min(92vw,560px)] -translate-x-1/2">
-      <div className="pointer-events-auto rounded-3xl border border-white/30 bg-surface-container-lowest/75 p-4 shadow-2xl backdrop-blur-xl">
-        <div className="mb-3 flex items-center gap-2 text-primary">
-          <span className="material-symbols-outlined text-base">auto_awesome</span>
-          <p className="font-headline text-sm font-bold tracking-tight">
+    <div className="pointer-events-none absolute bottom-4 left-1/2 z-[6] w-[min(92vw,540px)] -translate-x-1/2">
+      <div className="pointer-events-auto rounded-2xl border border-white/25 bg-surface/80 p-4 shadow-panel backdrop-blur-xl">
+        <div className="mb-2.5 flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary" style={{ fontSize: "14px", fontVariationSettings: "'FILL' 1" }}>
+              auto_awesome
+            </span>
+          </div>
+          <p className="font-headline text-[14px] font-bold text-on-surface italic">
             Ask AI Mentor
           </p>
         </div>

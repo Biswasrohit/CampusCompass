@@ -55,11 +55,11 @@ export interface ChatResponse {
 }
 
 export const CATEGORY_COLORS: Record<Category, string> = {
-  scholarships: "#494adb",
-  "mental-health": "#745479",
-  "food-security": "#a8364b",
-  housing: "#5d5d72",
-  "career-prep": "#3c3ccf",
+  scholarships: "#4E4FB5",
+  "mental-health": "#6B4C6E",
+  "food-security": "#8E3043",
+  housing: "#4A4A5E",
+  "career-prep": "#2A5C8F",
 };
 
 export const CATEGORY_LABELS: Record<Category, string> = {
