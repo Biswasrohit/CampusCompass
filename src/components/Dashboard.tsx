@@ -194,7 +194,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
       <div className="fixed inset-0 z-0 bg-[#1C1917]/70" />
 
       {/* ── Top Navigation Bar ── */}
-      <header className="fixed top-0 w-full z-50 flex items-center gap-3 px-4 md:px-6 h-[60px] bg-surface/80 backdrop-blur-xl border-b border-white/10">
+      <header className="fixed top-0 w-full z-50 flex items-center gap-3 px-4 md:px-6 h-[60px] bg-surface/95 backdrop-blur-xl border-b border-white/10">
         {/* Brand */}
         <button
           type="button"
@@ -290,7 +290,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
       </header>
 
       {/* ── Mobile search + tabs ── */}
-      <div className="fixed top-[60px] left-0 right-0 z-40 px-4 py-2 bg-surface/80 backdrop-blur-lg border-b border-white/10 md:hidden">
+      <div className="fixed top-[60px] left-0 right-0 z-40 px-4 py-2 bg-surface/95 backdrop-blur-lg border-b border-white/10 md:hidden">
         <SearchBar onSearch={handleSearch} loading={loading} />
         <div className="mt-2 flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
           {(["explore", "resources", "analytics"] as const).map((view) => (
@@ -301,7 +301,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               className={`rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeView === view
                   ? "bg-primary text-on-primary"
-                  : "bg-surface-container/80 text-on-surface/70"
+                  : "bg-surface-container text-on-surface/80"
               }`}
             >
               {view === "explore" ? "Explore" : view === "resources" ? "Saved" : "Insights"}
@@ -316,7 +316,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
 
           {/* LEFT: Filter Panel — frosted glass */}
           <aside
-            className={`hidden md:flex fixed left-0 top-[60px] bottom-0 flex-col border-r border-white/10 bg-surface/85 backdrop-blur-xl transition-all duration-300 overflow-hidden ${
+            className={`hidden md:flex fixed left-0 top-[60px] bottom-0 flex-col border-r border-white/10 bg-surface/95 backdrop-blur-xl transition-all duration-300 overflow-hidden ${
               filterCollapsed ? "w-0 border-r-0" : "w-[272px]"
             }`}
           >
@@ -337,7 +337,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           {/* Filter collapse/expand tab — always visible, sits at the panel edge */}
           <button
             onClick={() => setFilterCollapsed((v) => !v)}
-            className={`hidden md:flex fixed top-1/2 -translate-y-1/2 z-30 w-5 h-14 bg-surface/90 backdrop-blur-sm border border-white/20 rounded-r-xl items-center justify-center hover:bg-surface-container transition-all duration-300 shadow-sm ${
+            className={`hidden md:flex fixed top-1/2 -translate-y-1/2 z-30 w-5 h-14 bg-surface/95 backdrop-blur-sm border border-white/20 rounded-r-xl items-center justify-center hover:bg-surface-container transition-all duration-300 shadow-sm ${
               filterCollapsed ? "left-0" : "left-[272px]"
             }`}
             aria-label={filterCollapsed ? "Open filters" : "Close filters"}
@@ -383,7 +383,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
             </div>
 
             {/* Resource list below map — frosted glass */}
-            <div className="flex-1 overflow-hidden rounded-2xl bg-surface/88 backdrop-blur-xl border border-white/15 shadow-card flex flex-col">
+            <div className="flex-1 overflow-hidden rounded-2xl bg-surface/95 backdrop-blur-xl border border-white/15 shadow-card flex flex-col">
               <div className="px-3 pt-3 pb-2 shrink-0">
                 <SearchBar onSearch={handleSearch} loading={loading} />
               </div>
@@ -409,7 +409,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           </section>
 
           {/* RIGHT: Chat Panel (desktop only) */}
-          <aside className="hidden md:flex fixed right-0 top-[60px] bottom-0 w-[300px] flex-col bg-surface/85 backdrop-blur-xl border-l border-white/10">
+          <aside className="hidden md:flex fixed right-0 top-[60px] bottom-0 w-[300px] flex-col bg-surface/95 backdrop-blur-xl border-l border-white/10">
             <MapChatOverlay
               messages={messages}
               loading={chatLoading}

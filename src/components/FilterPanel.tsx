@@ -172,7 +172,7 @@ export default function FilterPanel({
                   {/* Label */}
                   <span
                     className={`text-[11px] text-center leading-tight tracking-wide transition-colors ${
-                      isActive ? "font-bold text-on-surface" : "font-medium text-on-surface/60"
+                      isActive ? "font-bold text-on-surface" : "font-medium text-on-surface/75"
                     }`}
                   >
                     {CATEGORY_FULL_LABELS[category]}
@@ -188,11 +188,11 @@ export default function FilterPanel({
       <div className="px-5 py-4 border-t border-white/10 mt-auto shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex gap-3">
-            <button className="text-[10px] text-on-surface/60 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
+            <button className="text-[10px] text-on-surface/75 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
               Privacy
             </button>
             <span className="text-on-surface/30 text-xs">·</span>
-            <button className="text-[10px] text-on-surface/60 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
+            <button className="text-[10px] text-on-surface/75 hover:text-on-surface transition-colors uppercase tracking-widest font-semibold">
               Terms
             </button>
           </div>
