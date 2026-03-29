@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { UserProfile } from "@/types";
+import { UserProfile, Resource, Category } from "@/types";
 import { getSchoolByName } from "@/lib/schools";
 import { useResources } from "@/hooks/useResources";
 import { useChat } from "@/hooks/useChat";
@@ -11,6 +11,10 @@ import FilterPanel from "./FilterPanel";
 import EventList from "./EventList";
 import MobileNav from "./MobileNav";
 import MapChatOverlay from "./MapChatOverlay";
+import AppNav from "./AppNav";
+import MyResourcesPage from "./MyResourcesPage";
+import InsightsPage from "./InsightsPage";
+import ProfilePage from "./ProfilePage";
 
 const MapView = dynamic(() => import("./MapView"), {
   ssr: false,
@@ -21,9 +25,13 @@ const MapView = dynamic(() => import("./MapView"), {
   ),
 });
 
+type DashboardView = "explore" | "resources" | "analytics" | "profile";
+
 interface DashboardProps {
   readonly userProfile: UserProfile;
 }
+
+const PINNED_STORAGE_KEY = "scholar-soft-pinned";
 
 export default function Dashboard({ userProfile }: DashboardProps) {
   const {
@@ -36,6 +44,9 @@ export default function Dashboard({ userProfile }: DashboardProps) {
   } = useResources();
   const { messages, loading: chatLoading, sendMessage } = useChat();
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [activeView, setActiveView] = useState<DashboardView>("explore");
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [pinnedIds, setPinnedIds] = useState<ReadonlySet<string>>(new Set());
   const bottomSheetRef = useRef<HTMLDivElement>(null);
 
   const school = getSchoolByName(userProfile.school);
@@ -51,6 +62,43 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     });
   }, [fetchResources, userProfile]);
 
+  useEffect(() => {
+    try {
+      const storedPinned = window.localStorage.getItem(PINNED_STORAGE_KEY);
+      if (!storedPinned) return;
+      const parsed = JSON.parse(storedPinned) as string[];
+      setPinnedIds(new Set(parsed));
+    } catch {
+      window.localStorage.removeItem(PINNED_STORAGE_KEY);
+    }
+  }, []);
+
+  function handleTogglePinned(resource: Resource) {
+    setPinnedIds((current) => {
+      const next = new Set(current);
+      if (next.has(resource.id)) {
+        next.delete(resource.id);
+      } else {
+        next.add(resource.id);
+      }
+      window.localStorage.setItem(
+        PINNED_STORAGE_KEY,
+        JSON.stringify(Array.from(next))
+      );
+      return next;
+    });
+  }
+
+  const pinnedResources = useMemo(
+    () => resources.filter((resource) => pinnedIds.has(resource.id)),
+    [pinnedIds, resources]
+  );
+
+  const activeFilterList = useMemo(
+    () => Array.from(activeFilters) as Category[],
+    [activeFilters]
+  );
+
   function handleSearch(query: string) {
     searchResources(query, {
       school: userProfile.school,
@@ -65,9 +113,13 @@ export default function Dashboard({ userProfile }: DashboardProps) {
       <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#fcf8fe]/80 backdrop-blur-xl border-b border-surface-variant/20">
         <div className="flex items-center gap-4 md:gap-8 flex-1">
           {/* Brand */}
-          <span className="text-xl font-bold text-on-surface font-headline tracking-tight whitespace-nowrap">
+          <button
+            type="button"
+            onClick={() => setActiveView("explore")}
+            className="text-xl font-bold text-on-surface font-headline tracking-tight whitespace-nowrap"
+          >
             Scholar Soft
-          </span>
+          </button>
 
           {/* Search - hidden on mobile, shown on md+ */}
           <div className="hidden md:block flex-1 max-w-2xl">
@@ -76,32 +128,7 @@ export default function Dashboard({ userProfile }: DashboardProps) {
         </div>
 
         {/* Nav links - hidden on mobile */}
-        <nav className="hidden lg:flex items-center gap-6 px-8">
-          <a
-            className="font-headline font-bold tracking-tight text-primary border-b-2 border-primary pb-1"
-            href="#"
-          >
-            Explore
-          </a>
-          <a
-            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
-            href="#"
-          >
-            Saved
-          </a>
-          <a
-            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
-            href="#"
-          >
-            My Resources
-          </a>
-          <a
-            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
-            href="#"
-          >
-            Analytics
-          </a>
-        </nav>
+        <AppNav activeView={activeView} onChangeView={setActiveView} />
 
         {/* Right actions */}
         <div className="flex items-center gap-2 md:gap-3">
@@ -110,17 +137,27 @@ export default function Dashboard({ userProfile }: DashboardProps) {
               notifications
             </span>
           </button>
-          <button className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200">
+          <button
+            type="button"
+            onClick={() => setShowEditProfile(true)}
+            className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200"
+            aria-label="Edit profile"
+          >
             <span className="material-symbols-outlined text-on-surface-variant">
-              settings
+              edit_square
             </span>
           </button>
           {/* Avatar */}
-          <div className="w-8 h-8 rounded-full overflow-hidden ml-1 ring-2 ring-primary-container bg-primary-container flex items-center justify-center">
+          <button
+            type="button"
+            onClick={() => setShowEditProfile(true)}
+            className="w-8 h-8 rounded-full overflow-hidden ml-1 ring-2 ring-primary-container bg-primary-container flex items-center justify-center"
+            aria-label="Open profile"
+          >
             <span className="text-xs font-bold text-on-primary-container">
               {userProfile.fullName.charAt(0).toUpperCase()}
             </span>
-          </div>
+          </button>
           {/* Mobile nav */}
           <MobileNav
             activeFilters={activeFilters}
@@ -129,79 +166,133 @@ export default function Dashboard({ userProfile }: DashboardProps) {
         </div>
       </header>
 
-      {/* Mobile search bar */}
+      {/* Mobile search bar + view tabs */}
       <div className="fixed top-16 left-0 right-0 z-40 px-4 py-2 bg-background/80 backdrop-blur-md md:hidden">
         <SearchBar onSearch={handleSearch} loading={loading} />
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          {(["explore", "resources", "analytics"] as const).map((view) => (
+            <button
+              key={view}
+              type="button"
+              onClick={() => setActiveView(view)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                activeView === view
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-container-lowest text-on-surface-variant"
+              }`}
+            >
+              {view === "explore" ? "Explore" : view === "resources" ? "My Resources" : "Insights"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Content Layout */}
-      <main className="flex flex-1 pt-16 overflow-hidden">
-        {/* Left Panel: Filters & AI - hidden on mobile */}
-        <aside className="hidden md:flex fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low flex-col">
-          <FilterPanel
-            activeFilters={activeFilters}
-            onToggle={toggleFilter}
-          />
-        </aside>
-
-        {/* Center Panel: Interactive Map */}
-        <section className="md:ml-64 md:mr-[30%] flex-1 h-full relative p-3 md:p-6 mt-12 md:mt-0">
-          <div className="w-full h-full rounded-[2rem] overflow-hidden bg-surface-container-low shadow-inner relative">
-            <MapView resources={resources} center={center} />
-
-            {/* Floating zoom controls */}
-            <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-[5]">
-              <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
-                <span className="material-symbols-outlined">add</span>
-              </button>
-              <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
-                <span className="material-symbols-outlined">remove</span>
-              </button>
-            </div>
-
-            {/* AI Chat Overlay */}
-            <MapChatOverlay
-              messages={messages}
-              loading={chatLoading}
-              onSend={sendMessage}
-              userProfile={userProfile}
+      {activeView === "explore" ? (
+        <main className="flex flex-1 pt-16 overflow-hidden">
+          {/* Left Panel: Filters & AI - hidden on mobile */}
+          <aside className="hidden md:flex fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low flex-col">
+            <FilterPanel
+              activeFilters={activeFilters}
+              onToggle={toggleFilter}
             />
-          </div>
+          </aside>
 
-          {/* Mobile bottom sheet toggle */}
-          <button
-            onClick={() => setShowBottomSheet(!showBottomSheet)}
-            className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary text-on-primary px-5 py-2.5 text-xs font-semibold shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
-          >
-            {showBottomSheet
-              ? "Show Map"
-              : `View Resources (${resources.length})`}
-          </button>
-        </section>
+          {/* Center Panel: Interactive Map */}
+          <section className="md:ml-64 md:mr-[30%] flex-1 h-full relative p-3 md:p-6 mt-12 md:mt-0">
+            <div className="w-full h-full rounded-[2rem] overflow-hidden bg-surface-container-low shadow-inner relative">
+              <MapView resources={resources} center={center} />
 
-        {/* Right Panel: Resource List */}
-        <aside
-          className={`${
-            showBottomSheet
-              ? "fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-3xl shadow-2xl"
-              : "hidden"
-          } w-full bg-surface md:fixed md:right-0 md:top-16 md:bottom-0 md:flex md:w-[30%] md:flex-col md:h-auto md:animate-none md:rounded-none md:shadow-none`}
-        >
-          {/* Drag handle (mobile) */}
-          {showBottomSheet && (
-            <div className="flex justify-center py-2 md:hidden">
-              <div className="h-1 w-8 rounded-full bg-outline-variant" />
+              {/* Floating zoom controls */}
+              <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-[5]">
+                <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
+                  <span className="material-symbols-outlined">add</span>
+                </button>
+                <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
+                  <span className="material-symbols-outlined">remove</span>
+                </button>
+              </div>
+
+              {/* AI Chat Overlay */}
+              <MapChatOverlay
+                messages={messages}
+                loading={chatLoading}
+                onSend={sendMessage}
+                userProfile={userProfile}
+              />
             </div>
-          )}
-          <div
-            ref={bottomSheetRef}
-            className="flex-1 overflow-hidden md:flex md:flex-col"
-          >
-            <EventList resources={resources} loading={loading} />
-          </div>
-        </aside>
-      </main>
 
+            {/* Mobile bottom sheet toggle */}
+            <button
+              onClick={() => setShowBottomSheet(!showBottomSheet)}
+              className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary text-on-primary px-5 py-2.5 text-xs font-semibold shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
+            >
+              {showBottomSheet
+                ? "Show Map"
+                : `View Resources (${resources.length})`}
+            </button>
+          </section>
+
+          {/* Right Panel: Resource List */}
+          <aside
+            className={`${
+              showBottomSheet
+                ? "fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-3xl shadow-2xl"
+                : "hidden"
+            } w-full bg-surface md:fixed md:right-0 md:top-16 md:bottom-0 md:flex md:w-[30%] md:flex-col md:h-auto md:animate-none md:rounded-none md:shadow-none`}
+          >
+            {/* Drag handle (mobile) */}
+            {showBottomSheet && (
+              <div className="flex justify-center py-2 md:hidden">
+                <div className="h-1 w-8 rounded-full bg-outline-variant" />
+              </div>
+            )}
+            <div
+              ref={bottomSheetRef}
+              className="flex-1 overflow-hidden md:flex md:flex-col"
+            >
+              <EventList resources={resources} loading={loading} />
+            </div>
+          </aside>
+        </main>
+      ) : (
+        <main className="min-h-0 flex-1 overflow-hidden bg-[linear-gradient(180deg,#fcf8fe_0%,#f6f2fb_100%)] px-4 pb-4 pt-28 md:px-6 md:pt-24">
+          <div className="mx-auto h-full max-w-7xl">
+            {activeView === "resources" ? (
+              <MyResourcesPage
+                pinnedResources={pinnedResources}
+                onBackToExplore={() => setActiveView("explore")}
+                onRemovePinned={(resourceId) => {
+                  setPinnedIds((current) => {
+                    const next = new Set(current);
+                    next.delete(resourceId);
+                    window.localStorage.setItem(
+                      PINNED_STORAGE_KEY,
+                      JSON.stringify(Array.from(next))
+                    );
+                    return next;
+                  });
+                }}
+              />
+            ) : null}
+
+            {activeView === "analytics" ? (
+              <InsightsPage
+                exploredCount={resources.length}
+                pinnedCount={pinnedResources.length}
+                activeFilters={activeFilterList}
+              />
+            ) : null}
+          </div>
+        </main>
+      )}
+
+      {showEditProfile ? (
+        <ProfilePage
+          userProfile={userProfile}
+          onClose={() => setShowEditProfile(false)}
+        />
+      ) : null}
     </div>
   );
 }
