@@ -25,6 +25,45 @@ export const NYC_SCHOOLS: readonly SchoolInfo[] = [
   { name: 'Manhattan College', lat: 40.8897, lng: -73.9025 },
 ] as const;
 
+export const NYC_AREAS: readonly SchoolInfo[] = [
+  // Manhattan
+  { name: 'Manhattan - Upper East Side', lat: 40.7736, lng: -73.9566 },
+  { name: 'Manhattan - Upper West Side', lat: 40.7870, lng: -73.9754 },
+  { name: 'Manhattan - Midtown', lat: 40.7549, lng: -73.9840 },
+  { name: 'Manhattan - Downtown', lat: 40.7128, lng: -74.0060 },
+  { name: 'Manhattan - Harlem', lat: 40.8176, lng: -73.9482 },
+  { name: 'Manhattan - Washington Heights', lat: 40.8515, lng: -73.9376 },
+  { name: 'Manhattan - East Village', lat: 40.7282, lng: -73.9942 },
+  { name: 'Manhattan - West Village', lat: 40.7358, lng: -74.0036 },
+  { name: 'Manhattan - Chelsea', lat: 40.7465, lng: -74.0014 },
+  // Brooklyn
+  { name: 'Brooklyn - Williamsburg', lat: 40.7081, lng: -73.9571 },
+  { name: 'Brooklyn - Park Slope', lat: 40.6681, lng: -73.9806 },
+  { name: 'Brooklyn - Downtown Brooklyn', lat: 40.6943, lng: -73.9249 },
+  { name: 'Brooklyn - Bushwick', lat: 40.6953, lng: -73.9171 },
+  { name: 'Brooklyn - Bedford-Stuyvesant', lat: 40.6872, lng: -73.9418 },
+  { name: 'Brooklyn - Coney Island', lat: 40.5755, lng: -73.9707 },
+  // Queens
+  { name: 'Queens - Flushing', lat: 40.7675, lng: -73.8331 },
+  { name: 'Queens - Long Island City', lat: 40.7447, lng: -73.9485 },
+  { name: 'Queens - Astoria', lat: 40.7644, lng: -73.9235 },
+  { name: 'Queens - Jamaica', lat: 40.7027, lng: -73.7890 },
+  { name: 'Queens - Forest Hills', lat: 40.7181, lng: -73.8448 },
+  // Bronx
+  { name: 'Bronx - South Bronx', lat: 40.8176, lng: -73.9182 },
+  { name: 'Bronx - Fordham', lat: 40.8613, lng: -73.8907 },
+  { name: 'Bronx - Riverdale', lat: 40.8901, lng: -73.9118 },
+  // Staten Island
+  { name: 'Staten Island - St. George', lat: 40.6437, lng: -74.0776 },
+  { name: 'Staten Island - New Dorp', lat: 40.5739, lng: -74.1163 },
+] as const;
+
+export const ALL_LOCATIONS: readonly SchoolInfo[] = [...NYC_SCHOOLS, ...NYC_AREAS] as const;
+
 export function getSchoolByName(name: string): SchoolInfo | undefined {
   return NYC_SCHOOLS.find((s) => s.name === name);
+}
+
+export function getLocationByName(name: string): SchoolInfo | undefined {
+  return ALL_LOCATIONS.find((s) => s.name === name);
 }

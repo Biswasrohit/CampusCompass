@@ -40,12 +40,18 @@ export interface SearchRequest {
   readonly gender: string;
   readonly raceEthnicity: string;
   readonly query?: string;
+  readonly searchLocation?: string;
 }
 
 export interface ChatRequest {
   readonly message: string;
   readonly history: readonly ChatMessage[];
   readonly userProfile: UserProfile;
+}
+
+export interface ChatResponse {
+  readonly reply: string;
+  readonly extractedTopics?: readonly string[];
 }
 
 export const CATEGORY_COLORS: Record<Category, string> = {
