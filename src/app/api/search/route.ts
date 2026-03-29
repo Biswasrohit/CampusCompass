@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { filterResources, CuratedItem } from "@/lib/gemini";
 import { searchFromSuggestions } from "@/lib/tavily";
 import { parseResults } from "@/lib/parse-results";
-import { getSchoolByName } from "@/lib/schools";
+import { getSchoolByName, getLocationByName } from "@/lib/schools";
 import { SCHOLARSHIP_SOURCES } from "@/lib/scholarships";
 import { OPPORTUNITY_SOURCES } from "@/lib/opportunities";
 import { WELLNESS_SOURCES } from "@/lib/wellness";
@@ -72,6 +72,11 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get location for map center - use custom search location if provided
+    const searchLocation = body.searchLocation 
+      ? (getLocationByName(body.searchLocation) ?? school)
+      : school;
+
     // Step 1: Build curated list filtered by user demographics
     const curatedItems = buildCuratedList(body.raceEthnicity, body.gender);
 
@@ -84,7 +89,7 @@ export async function POST(request: Request) {
 
     // Step 3: Tavily fetches real URLs for each selected resource
     const categorizedResults = await searchFromSuggestions(suggestions);
-    const resources = parseResults(categorizedResults, school);
+    const resources = parseResults(categorizedResults, searchLocation);
 
     return NextResponse.json({ resources });
   } catch (error) {

@@ -6,10 +6,15 @@ import {
   CATEGORY_FULL_LABELS,
   CATEGORY_ICONS,
 } from "@/types";
+import { ALL_LOCATIONS } from "@/lib/schools";
 
 interface FilterPanelProps {
   readonly activeFilters: ReadonlySet<Category>;
   readonly onToggle: (category: Category) => void;
+  readonly selectedLocation: string;
+  readonly onLocationChange: (location: string) => void;
+  readonly onRefresh: () => void;
+  readonly loading?: boolean;
 }
 
 const CATEGORIES: readonly Category[] = [
@@ -23,6 +28,10 @@ const CATEGORIES: readonly Category[] = [
 export default function FilterPanel({
   activeFilters,
   onToggle,
+  selectedLocation,
+  onLocationChange,
+  onRefresh,
+  loading = false,
 }: FilterPanelProps) {
   return (
     <div className="flex h-full flex-col p-4 gap-6">
@@ -37,7 +46,79 @@ export default function FilterPanel({
           </p>
         </div>
 
-        {/* Category buttons */}
+        {/* Location Selector */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+          Search Area
+        </h3>
+        <div className="relative">
+          <select
+            value={selectedLocation}
+            onChange={(e) => onLocationChange(e.target.value)}
+            className="w-full appearance-none bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-3 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+          >
+            <optgroup label="Your School">
+              {ALL_LOCATIONS.filter(loc => !loc.name.includes('Manhattan') && !loc.name.includes('Brooklyn') && !loc.name.includes('Queens') && !loc.name.includes('Bronx') && !loc.name.includes('Staten Island')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Manhattan">
+              {ALL_LOCATIONS.filter(loc => loc.name.startsWith('Manhattan')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name.replace('Manhattan - ', '')}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Brooklyn">
+              {ALL_LOCATIONS.filter(loc => loc.name.startsWith('Brooklyn')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name.replace('Brooklyn - ', '')}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Queens">
+              {ALL_LOCATIONS.filter(loc => loc.name.startsWith('Queens')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name.replace('Queens - ', '')}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Bronx">
+              {ALL_LOCATIONS.filter(loc => loc.name.startsWith('Bronx')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name.replace('Bronx - ', '')}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Staten Island">
+              {ALL_LOCATIONS.filter(loc => loc.name.startsWith('Staten Island')).map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name.replace('Staten Island - ', '')}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">
+            expand_more
+          </span>
+        </div>
+
+        {/* Refresh Button */}
+        <button
+          onClick={onRefresh}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className={`material-symbols-outlined ${loading ? 'animate-spin' : ''}`}>
+            {loading ? 'progress_activity' : 'refresh'}
+          </span>
+          {loading ? 'Searching...' : 'Refresh Search'}
+        </button>
+      </div>
+
+      {/* Category buttons */}
         <div className="space-y-2">
           {CATEGORIES.map((category) => {
             const isActive = activeFilters.has(category);

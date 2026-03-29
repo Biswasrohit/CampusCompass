@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { chatWithOpenRouter } from "@/lib/openrouter";
+import { chatWithGemini } from "@/lib/gemini";
 import { ChatRequest } from "@/types";
 
 export async function POST(request: Request) {
@@ -27,13 +27,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const reply = await chatWithOpenRouter(
+    const chatResponse = await chatWithGemini(
       body.message,
       body.history ?? [],
       body.userProfile,
     );
 
-    return NextResponse.json({ reply });
+    return NextResponse.json(chatResponse);
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(

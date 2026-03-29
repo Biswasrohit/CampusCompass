@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ChatMessage, UserProfile } from "@/types";
+import { ChatMessage, UserProfile, ChatResponse } from "@/types";
 
-export function useChat() {
+interface UseChatOptions {
+  readonly onTopicsExtracted?: (topics: readonly string[]) => void;
+}
+
+export function useChat(options?: UseChatOptions) {
   const [messages, setMessages] = useState<readonly ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -29,13 +33,18 @@ export function useChat() {
           throw new Error("Failed to get response");
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as ChatResponse;
         const assistantMessage: ChatMessage = {
           role: "assistant",
           content: data.reply,
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
+
+        // If topics were extracted, notify the parent component
+        if (data.extractedTopics && data.extractedTopics.length > 0) {
+          options?.onTopicsExtracted?.(data.extractedTopics);
+        }
       } catch {
         const errorMessage: ChatMessage = {
           role: "assistant",
@@ -46,7 +55,7 @@ export function useChat() {
         setLoading(false);
       }
     },
-    [messages]
+    [messages, options]
   );
 
   return { messages, loading, sendMessage };

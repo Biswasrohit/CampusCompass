@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { UserProfile } from "@/types";
-import { getSchoolByName } from "@/lib/schools";
+import { getSchoolByName, getLocationByName } from "@/lib/schools";
 import { useResources } from "@/hooks/useResources";
 import { useChat } from "@/hooks/useChat";
 import SearchBar from "./SearchBar";
@@ -34,30 +34,84 @@ export default function Dashboard({ userProfile }: DashboardProps) {
     searchResources,
     toggleFilter,
   } = useResources();
-  const { messages, loading: chatLoading, sendMessage } = useChat();
+
+  // Track current search context - generic (profile-only) or specialized (with topics)
+  const [currentQuery, setCurrentQuery] = useState<string | undefined>(undefined);
+
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const bottomSheetRef = useRef<HTMLDivElement>(null);
 
-  const school = getSchoolByName(userProfile.school);
-  const center: [number, number] = school
-    ? [school.lat, school.lng]
+  const [selectedLocation, setSelectedLocation] = useState<string>(userProfile.school);
+
+  // Handle topics extracted from chat - refetch resources with the topic as query
+  const handleTopicsExtracted = useCallback((topics: readonly string[]) => {
+    if (topics.length > 0) {
+      // Use the first/most relevant topic as the search query
+      const topicQuery = topics.join(" ");
+      setCurrentQuery(topicQuery);
+      searchResources(topicQuery, {
+        school: userProfile.school,
+        gender: userProfile.gender,
+        raceEthnicity: userProfile.raceEthnicity,
+        searchLocation: selectedLocation,
+      });
+    }
+  }, [searchResources, userProfile, selectedLocation]);
+
+  const { messages, loading: chatLoading, sendMessage } = useChat({
+    onTopicsExtracted: handleTopicsExtracted,
+  });
+
+  // Get current location center for map
+  const locationInfo = getLocationByName(selectedLocation) ?? getSchoolByName(userProfile.school);
+  const center: [number, number] = locationInfo
+    ? [locationInfo.lat, locationInfo.lng]
     : [40.7128, -74.006];
 
+  // Initial load: fetch generic resources based on user profile only
   useEffect(() => {
+    fetchResources({
+      school: userProfile.school,
+      gender: userProfile.gender,
+      raceEthnicity: userProfile.raceEthnicity,
+      searchLocation: selectedLocation,
+    });
+  }, [fetchResources, userProfile, selectedLocation]);
+
+  // Handle manual search from search bar
+  function handleSearch(query: string) {
+    setCurrentQuery(query || undefined);
+    searchResources(query, {
+      school: userProfile.school,
+      gender: userProfile.gender,
+      raceEthnicity: userProfile.raceEthnicity,
+      searchLocation: selectedLocation,
+    });
+  }
+
+  // Handle location change from filter panel
+  const handleLocationChange = useCallback((location: string) => {
+    setSelectedLocation(location);
+  }, []);
+
+  // Handle refresh search with current location
+  const handleRefreshSearch = useCallback(() => {
+    const query = currentQuery ?? "";
+    searchResources(query, {
+      school: userProfile.school,
+      gender: userProfile.gender,
+      raceEthnicity: userProfile.raceEthnicity,
+      searchLocation: selectedLocation,
+    });
+  }, [searchResources, userProfile, selectedLocation, currentQuery]);
+  const handleResetToGeneric = useCallback(() => {
+    setCurrentQuery(undefined);
     fetchResources({
       school: userProfile.school,
       gender: userProfile.gender,
       raceEthnicity: userProfile.raceEthnicity,
     });
   }, [fetchResources, userProfile]);
-
-  function handleSearch(query: string) {
-    searchResources(query, {
-      school: userProfile.school,
-      gender: userProfile.gender,
-      raceEthnicity: userProfile.raceEthnicity,
-    });
-  }
 
   return (
     <div className="flex h-screen flex-col bg-background overflow-hidden">
@@ -141,6 +195,10 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           <FilterPanel
             activeFilters={activeFilters}
             onToggle={toggleFilter}
+            selectedLocation={selectedLocation}
+            onLocationChange={handleLocationChange}
+            onRefresh={handleRefreshSearch}
+            loading={loading}
           />
         </aside>
 
@@ -197,7 +255,12 @@ export default function Dashboard({ userProfile }: DashboardProps) {
             ref={bottomSheetRef}
             className="flex-1 overflow-hidden md:flex md:flex-col"
           >
-            <EventList resources={resources} loading={loading} />
+            <EventList 
+              resources={resources} 
+              loading={loading} 
+              currentQuery={currentQuery}
+              onReset={handleResetToGeneric}
+            />
           </div>
         </aside>
       </main>

@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Category } from "@/types";
+import { ChatMessage, UserProfile, Category, ChatResponse } from "@/types";
 import { SearchRequest } from "@/types";
 
 function getGenAI() {
@@ -109,3 +109,46 @@ Example: [{"query": "Gates Scholarship official application 2025", "category": "
   }
 }
 
+export async function chatWithGemini(
+  message: string,
+  history: readonly ChatMessage[],
+  userProfile: UserProfile
+): Promise<ChatResponse> {
+  const model = getGenAI().getGenerativeModel({
+    model: "gemini-2.5-flash",
+    systemInstruction: `You are a helpful assistant for ${userProfile.fullName}, a student at ${userProfile.school}. Help them find scholarships, mental health resources, and learning programs in NYC. Be concise, actionable, and encouraging. If they ask about specific programs, provide real information when possible. Keep responses under 150 words.
+
+IMPORTANT: When the user mentions specific career interests, fields of study, or topics (e.g., "Software Engineering", "Data Science", "Nursing", "Graphic Design", "Law"), identify and extract these topics. Return your response in JSON format with two fields:
+- "reply": your conversational response to the user
+- "extractedTopics": an array of career/field/topic keywords extracted from the user's message (e.g., ["Software Engineering", "Computer Science"]). If no specific topics are mentioned, return an empty array.
+
+Example response: {"reply": "That's a great field! Here are some resources...", "extractedTopics": ["Software Engineering"]}`
+  });
+
+  const chat = model.startChat({
+    history: history.map((msg) => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.content }],
+    })),
+  });
+
+  const result = await chat.sendMessage(message);
+  const response = result.response;
+  const text = response.text();
+
+  // Try to parse as JSON to extract topics
+  try {
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]) as { reply: string; extractedTopics?: string[] };
+      return {
+        reply: parsed.reply,
+        extractedTopics: parsed.extractedTopics?.filter(Boolean) ?? [],
+      };
+    }
+  } catch {
+    // Not JSON format, fall back to treating entire response as reply
+  }
+
+  return { reply: text, extractedTopics: [] };
+}

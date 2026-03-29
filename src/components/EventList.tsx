@@ -6,6 +6,8 @@ import EventCard from "./EventCard";
 interface EventListProps {
   readonly resources: readonly Resource[];
   readonly loading: boolean;
+  readonly currentQuery?: string;
+  readonly onReset?: () => void;
 }
 
 function Skeleton() {
@@ -25,7 +27,7 @@ function Skeleton() {
   );
 }
 
-export default function EventList({ resources, loading }: EventListProps) {
+export default function EventList({ resources, loading, currentQuery, onReset }: EventListProps) {
   if (loading) {
     return (
       <div className="flex-1 overflow-y-auto hide-scrollbar p-6">
@@ -42,9 +44,26 @@ export default function EventList({ resources, loading }: EventListProps) {
   return (
     <div className="flex-1 overflow-y-auto hide-scrollbar p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold font-headline text-on-surface tracking-tight">
-          Nearby Resources
-        </h3>
+        <div>
+          <h3 className="text-xl font-bold font-headline text-on-surface tracking-tight">
+            Nearby Resources
+          </h3>
+          {currentQuery && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-on-surface-variant">
+                Showing results for: <span className="font-semibold text-primary">{currentQuery}</span>
+              </span>
+              {onReset && (
+                <button
+                  onClick={onReset}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         <button className="text-sm font-semibold text-primary hover:underline">
           View All
         </button>
@@ -57,8 +76,16 @@ export default function EventList({ resources, loading }: EventListProps) {
           </span>
           <p className="text-sm text-on-surface-variant">No resources found</p>
           <p className="mt-1 text-xs text-outline-variant">
-            Try adjusting your filters
+            {currentQuery ? `Try a different search term` : "Try adjusting your filters"}
           </p>
+          {onReset && currentQuery && (
+            <button
+              onClick={onReset}
+              className="mt-4 px-4 py-2 text-sm font-semibold bg-primary text-on-primary rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Show All Resources
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-6">
