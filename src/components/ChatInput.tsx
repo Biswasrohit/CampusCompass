@@ -1,7 +1,65 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { ChatMessage } from "@/types";
+
+function parseBoldSegments(text: string): ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
+function formatMessage(content: string): ReactNode {
+  const lines = content.split("\n").filter((line) => line.trim() !== "");
+
+  const blocks: ReactNode[] = [];
+  let bulletGroup: ReactNode[] = [];
+
+  const flushBullets = () => {
+    if (bulletGroup.length > 0) {
+      blocks.push(
+        <ul key={`ul-${blocks.length}`} className="my-1 space-y-1 pl-3">
+          {bulletGroup}
+        </ul>
+      );
+      bulletGroup = [];
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    const bulletMatch = trimmed.match(/^[-•]\s+(.*)/);
+
+    if (bulletMatch) {
+      bulletGroup.push(
+        <li key={`li-${i}`} className="flex gap-1.5">
+          <span className="mt-0.5 shrink-0 text-[10px] text-on-surface-variant">
+            •
+          </span>
+          <span>{parseBoldSegments(bulletMatch[1])}</span>
+        </li>
+      );
+    } else {
+      flushBullets();
+      blocks.push(
+        <p key={`p-${i}`} className={blocks.length > 0 ? "mt-1.5" : ""}>
+          {parseBoldSegments(trimmed)}
+        </p>
+      );
+    }
+  }
+  flushBullets();
+
+  return <>{blocks}</>;
+}
 
 interface ChatInputProps {
   readonly messages: readonly ChatMessage[];
@@ -55,7 +113,9 @@ export default function ChatInput({
                   : "bg-surface-container text-on-surface"
               }`}
             >
-              {msg.content}
+              {msg.role === "assistant"
+                ? formatMessage(msg.content)
+                : msg.content}
             </div>
           </div>
         ))}
