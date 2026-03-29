@@ -1,5 +1,5 @@
 import { tavily } from "@tavily/core";
-import { SearchRequest } from "@/types";
+import { Category, SearchRequest } from "@/types";
 
 function getClient() {
   const apiKey = process.env.TAVILY_API_KEY;
@@ -16,7 +16,7 @@ interface TavilyResult {
 }
 
 export interface CategorizedResults {
-  readonly category: "scholarships" | "mental-health" | "learning";
+  readonly category: Category;
   readonly results: readonly TavilyResult[];
 }
 
@@ -26,7 +26,9 @@ function buildQueries(profile: SearchRequest): readonly string[] {
   const queries = [
     `${school} scholarships financial aid ${raceEthnicity !== "Prefer not to say" ? raceEthnicity : ""} students 2026`,
     `free mental health counseling wellness resources NYC college students near ${school}`,
-    `free coding programs learning workshops bootcamps ${school} university students NYC CodePath`,
+    `food pantry food assistance free meals NYC college students near ${school}`,
+    `affordable student housing housing assistance NYC college students near ${school}`,
+    `career prep internship mentorship programs NYC college students ${school}`,
   ];
 
   if (query) {
@@ -40,10 +42,12 @@ export async function searchResources(
   profile: SearchRequest
 ): Promise<readonly CategorizedResults[]> {
   const queries = buildQueries(profile);
-  const categories: Array<"scholarships" | "mental-health" | "learning"> = [
+  const categories: readonly Category[] = [
     "scholarships",
     "mental-health",
-    "learning",
+    "food-security",
+    "housing",
+    "career-prep",
   ];
 
   const results = await Promise.allSettled(

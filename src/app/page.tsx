@@ -30,14 +30,14 @@ export default function Home() {
         transitioning ? "opacity-0" : "opacity-100"
       }`}
     >
-      {/* Background map placeholder */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
-        {/* Faux map grid pattern */}
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-surface-container-low via-background to-surface-container">
+        {/* Subtle grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,0,0,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,1) 1px, transparent 1px)",
+              "linear-gradient(rgba(73,74,219,1) 1px, transparent 1px), linear-gradient(90deg, rgba(73,74,219,1) 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />

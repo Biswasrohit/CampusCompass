@@ -1,6 +1,11 @@
 "use client";
 
-import { Category, CATEGORY_COLORS, CATEGORY_LABELS } from "@/types";
+import {
+  Category,
+  CATEGORY_COLORS,
+  CATEGORY_FULL_LABELS,
+  CATEGORY_ICONS,
+} from "@/types";
 import ChatInput from "./ChatInput";
 import { ChatMessage, UserProfile } from "@/types";
 
@@ -16,7 +21,9 @@ interface FilterPanelProps {
 const CATEGORIES: readonly Category[] = [
   "scholarships",
   "mental-health",
-  "learning",
+  "food-security",
+  "housing",
+  "career-prep",
 ];
 
 export default function FilterPanel({
@@ -28,12 +35,19 @@ export default function FilterPanel({
   userProfile,
 }: FilterPanelProps) {
   return (
-    <div className="flex h-full flex-col">
-      {/* Filters */}
-      <div className="p-4">
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Filters
-        </h2>
+    <div className="flex h-full flex-col p-4 gap-6">
+      {/* Header */}
+      <div>
+        <div className="mb-4">
+          <h2 className="text-lg font-bold font-headline text-on-surface">
+            Resource Finder
+          </h2>
+          <p className="text-xs text-on-surface-variant font-medium">
+            New York City
+          </p>
+        </div>
+
+        {/* Category buttons */}
         <div className="space-y-2">
           {CATEGORIES.map((category) => {
             const isActive = activeFilters.has(category);
@@ -41,35 +55,27 @@ export default function FilterPanel({
               <button
                 key={category}
                 onClick={() => onToggle(category)}
-                className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-transform duration-200 hover:bg-slate-50 active:scale-[0.98]"
+                className={`w-full flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 hover:translate-x-1 ${
+                  isActive
+                    ? "bg-surface-container-lowest text-primary font-semibold shadow-sm"
+                    : "text-on-surface-variant hover:bg-surface-container"
+                }`}
               >
                 <span
-                  className="flex h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
+                  className="material-symbols-outlined"
                   style={{
-                    backgroundColor: CATEGORY_COLORS[category],
-                    opacity: isActive ? 1 : 0.25,
+                    fontVariationSettings: isActive
+                      ? "'FILL' 1"
+                      : "'FILL' 0",
+                    color: isActive
+                      ? CATEGORY_COLORS[category]
+                      : undefined,
                   }}
-                />
-                <span
-                  className={`text-sm transition-opacity duration-200 ${
-                    isActive
-                      ? "font-medium text-slate-900"
-                      : "text-slate-400"
-                  }`}
                 >
-                  {CATEGORY_LABELS[category]}
+                  {CATEGORY_ICONS[category]}
                 </span>
-                {/* Toggle indicator */}
-                <span
-                  className={`ml-auto h-5 w-9 shrink-0 rounded-full transition-transform duration-200 ${
-                    isActive ? "bg-slate-900" : "bg-slate-200"
-                  } relative`}
-                >
-                  <span
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                      isActive ? "translate-x-4" : "translate-x-0.5"
-                    }`}
-                  />
+                <span className="text-sm font-label tracking-wide">
+                  {CATEGORY_FULL_LABELS[category]}
                 </span>
               </button>
             );
@@ -77,19 +83,33 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="mx-4 border-t border-slate-100" />
-
-      {/* Chat */}
-      <div className="flex min-h-0 flex-1 flex-col p-4">
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-          AI Assistant
-        </h2>
-        <ChatInput
-          messages={chatMessages}
-          loading={chatLoading}
-          onSend={(msg) => onChatSend(msg, userProfile)}
-        />
+      {/* AI Mentor section */}
+      <div className="mt-auto pt-6 border-t border-outline-variant/10">
+        <div className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm space-y-3 mb-4">
+          <div className="flex items-center gap-2 text-primary font-bold text-sm">
+            <span className="material-symbols-outlined text-sm">
+              auto_awesome
+            </span>
+            <span>Ask AI Mentor</span>
+          </div>
+          <p className="text-[11px] text-on-surface-variant leading-relaxed">
+            &ldquo;Find me learning programs for computer science in
+            Brooklyn...&rdquo;
+          </p>
+          <ChatInput
+            messages={chatMessages}
+            loading={chatLoading}
+            onSend={(msg) => onChatSend(msg, userProfile)}
+          />
+        </div>
+        <div className="flex gap-4 px-2">
+          <button className="text-[10px] text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest font-bold">
+            Privacy
+          </button>
+          <button className="text-[10px] text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest font-bold">
+            Terms
+          </button>
+        </div>
       </div>
     </div>
   );

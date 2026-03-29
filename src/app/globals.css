@@ -3,13 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #fcf8fe;
+  --foreground: #32323b;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+
+h1, h2, h3, .font-headline {
+  font-family: var(--font-headline, "Plus Jakarta Sans"), sans-serif;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Leaflet z-index fixes */
@@ -25,7 +37,7 @@ body {
   z-index: 2;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Stitch styled */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -35,10 +47,20 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #b3b0bc;
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #7b7984;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

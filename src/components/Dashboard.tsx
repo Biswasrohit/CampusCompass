@@ -14,8 +14,8 @@ import MobileNav from "./MobileNav";
 const MapView = dynamic(() => import("./MapView"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-100">
-      <div className="text-sm text-slate-400">Loading map...</div>
+    <div className="flex h-full w-full items-center justify-center rounded-[2rem] bg-surface-container-low">
+      <div className="text-sm text-on-surface-variant">Loading map...</div>
     </div>
   ),
 });
@@ -59,58 +59,69 @@ export default function Dashboard({ userProfile }: DashboardProps) {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-surface-50">
-      {/* Top bar */}
-      <div className="flex items-center gap-3 border-b border-slate-100 bg-white px-4 py-3">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-scholarship to-learning">
-            <svg
-              className="h-4 w-4 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-          </div>
-          <span className="hidden text-sm font-bold text-slate-900 sm:inline">
-            StudentMap
+    <div className="flex h-screen flex-col bg-background overflow-hidden">
+      {/* Top Navigation Bar */}
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#fcf8fe]/80 backdrop-blur-xl border-b border-surface-variant/20">
+        <div className="flex items-center gap-4 md:gap-8 flex-1">
+          {/* Brand */}
+          <span className="text-xl font-bold text-on-surface font-headline tracking-tight whitespace-nowrap">
+            Scholar Soft
           </span>
+
+          {/* Search - hidden on mobile, shown on md+ */}
+          <div className="hidden md:block flex-1 max-w-2xl">
+            <SearchBar onSearch={handleSearch} loading={loading} />
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="flex-1">
-          <SearchBar onSearch={handleSearch} loading={loading} />
-        </div>
+        {/* Nav links - hidden on mobile */}
+        <nav className="hidden lg:flex items-center gap-6 px-8">
+          <a
+            className="font-headline font-bold tracking-tight text-primary border-b-2 border-primary pb-1"
+            href="#"
+          >
+            Explore
+          </a>
+          <a
+            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#"
+          >
+            Saved
+          </a>
+          <a
+            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#"
+          >
+            My Resources
+          </a>
+          <a
+            className="font-headline font-bold tracking-tight text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#"
+          >
+            Analytics
+          </a>
+        </nav>
 
-        {/* Mobile filter button */}
-        <MobileNav
-          activeFilters={activeFilters}
-          onToggle={toggleFilter}
-          chatMessages={messages}
-          chatLoading={chatLoading}
-          onChatSend={sendMessage}
-          userProfile={userProfile}
-        />
-      </div>
-
-      {/* Three-panel layout */}
-      <div className="flex min-h-0 flex-1">
-        {/* Left panel - Filters (hidden on mobile) */}
-        <div className="hidden w-[260px] shrink-0 border-r border-slate-100 bg-white md:flex md:flex-col">
-          <FilterPanel
+        {/* Right actions */}
+        <div className="flex items-center gap-2 md:gap-3">
+          <button className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200">
+            <span className="material-symbols-outlined text-on-surface-variant">
+              notifications
+            </span>
+          </button>
+          <button className="hidden md:flex p-2 hover:bg-surface-container transition-colors rounded-lg active:scale-95 duration-200">
+            <span className="material-symbols-outlined text-on-surface-variant">
+              settings
+            </span>
+          </button>
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full overflow-hidden ml-1 ring-2 ring-primary-container bg-primary-container flex items-center justify-center">
+            <span className="text-xs font-bold text-on-primary-container">
+              {userProfile.fullName.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          {/* Mobile nav */}
+          <MobileNav
             activeFilters={activeFilters}
             onToggle={toggleFilter}
             chatMessages={messages}
@@ -119,32 +130,66 @@ export default function Dashboard({ userProfile }: DashboardProps) {
             userProfile={userProfile}
           />
         </div>
+      </header>
 
-        {/* Center panel - Map */}
-        <div className="relative flex-1">
-          <MapView resources={resources} center={center} />
+      {/* Mobile search bar */}
+      <div className="fixed top-16 left-0 right-0 z-40 px-4 py-2 bg-background/80 backdrop-blur-md md:hidden">
+        <SearchBar onSearch={handleSearch} loading={loading} />
+      </div>
+
+      {/* Main Content Layout */}
+      <main className="flex flex-1 pt-16 overflow-hidden">
+        {/* Left Panel: Filters & AI - hidden on mobile */}
+        <aside className="hidden md:flex fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low flex-col">
+          <FilterPanel
+            activeFilters={activeFilters}
+            onToggle={toggleFilter}
+            chatMessages={messages}
+            chatLoading={chatLoading}
+            onChatSend={sendMessage}
+            userProfile={userProfile}
+          />
+        </aside>
+
+        {/* Center Panel: Interactive Map */}
+        <section className="md:ml-64 md:mr-[30%] flex-1 h-full relative p-3 md:p-6 mt-12 md:mt-0">
+          <div className="w-full h-full rounded-[2rem] overflow-hidden bg-surface-container-low shadow-inner relative">
+            <MapView resources={resources} center={center} />
+
+            {/* Floating zoom controls */}
+            <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-[5]">
+              <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
+                <span className="material-symbols-outlined">add</span>
+              </button>
+              <button className="w-10 h-10 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center hover:bg-primary hover:text-on-primary text-on-surface transition-all active:scale-95">
+                <span className="material-symbols-outlined">remove</span>
+              </button>
+            </div>
+          </div>
 
           {/* Mobile bottom sheet toggle */}
           <button
             onClick={() => setShowBottomSheet(!showBottomSheet)}
-            className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-700 shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
+            className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary text-on-primary px-5 py-2.5 text-xs font-semibold shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
           >
-            {showBottomSheet ? "Show Map" : `View Resources (${resources.length})`}
+            {showBottomSheet
+              ? "Show Map"
+              : `View Resources (${resources.length})`}
           </button>
-        </div>
+        </section>
 
-        {/* Right panel - Event list (hidden on mobile unless bottom sheet open) */}
-        <div
+        {/* Right Panel: Resource List */}
+        <aside
           className={`${
             showBottomSheet
-              ? "fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-2xl shadow-2xl"
+              ? "fixed inset-x-0 bottom-0 z-30 h-[60vh] animate-slide-in-bottom rounded-t-3xl shadow-2xl"
               : "hidden"
-          } w-full border-l border-slate-100 bg-white md:relative md:flex md:h-auto md:w-[360px] md:shrink-0 md:animate-none md:rounded-none md:shadow-none`}
+          } w-full bg-surface md:fixed md:right-0 md:top-16 md:bottom-0 md:flex md:w-[30%] md:flex-col md:h-auto md:animate-none md:rounded-none md:shadow-none`}
         >
           {/* Drag handle (mobile) */}
           {showBottomSheet && (
             <div className="flex justify-center py-2 md:hidden">
-              <div className="h-1 w-8 rounded-full bg-slate-300" />
+              <div className="h-1 w-8 rounded-full bg-outline-variant" />
             </div>
           )}
           <div
@@ -153,8 +198,22 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           >
             <EventList resources={resources} loading={loading} />
           </div>
+        </aside>
+      </main>
+
+      {/* Contextual FAB */}
+      <button className="hidden md:flex fixed bottom-8 right-[32%] z-50 bg-primary text-on-primary px-6 py-4 rounded-full shadow-2xl items-center gap-3 hover:scale-105 transition-transform active:scale-95 group">
+        <span
+          className="material-symbols-outlined"
+          style={{ fontVariationSettings: "'FILL' 1" }}
+        >
+          add_circle
+        </span>
+        <span className="font-headline font-bold">New Resource</span>
+        <div className="absolute -top-12 right-0 bg-surface-container-lowest text-primary text-[10px] px-3 py-1 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-primary/10">
+          Contribute to the community
         </div>
-      </div>
+      </button>
     </div>
   );
 }

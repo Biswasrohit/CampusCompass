@@ -8,7 +8,7 @@ export function useResources() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeFilters, setActiveFilters] = useState<ReadonlySet<Category>>(
-    new Set<Category>(["scholarships", "mental-health", "learning"])
+    new Set<Category>(["scholarships", "mental-health", "food-security", "housing", "career-prep"])
   );
 
   const fetchResources = useCallback(async (profile: SearchRequest) => {

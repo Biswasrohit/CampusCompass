@@ -4,7 +4,12 @@ import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Resource, CATEGORY_COLORS } from "@/types";
+import {
+  Resource,
+  CATEGORY_COLORS,
+  CATEGORY_LABELS,
+  CATEGORY_ICONS,
+} from "@/types";
 
 interface MapViewProps {
   readonly resources: readonly Resource[];
@@ -12,23 +17,39 @@ interface MapViewProps {
   readonly zoom?: number;
 }
 
-function createCategoryIcon(color: string): L.DivIcon {
+function createCircularIcon(color: string, icon: string, size: number): L.DivIcon {
+  const ringWidth = size === 40 ? 4 : 2;
   return L.divIcon({
     className: "custom-marker",
-    html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="${color}"/>
-      <circle cx="14" cy="14" r="6" fill="white" fill-opacity="0.9"/>
-    </svg>`,
-    iconSize: [28, 36],
-    iconAnchor: [14, 36],
-    popupAnchor: [0, -36],
+    html: `<div style="
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: ${ringWidth}px solid white;
+    ">
+      <span class="material-symbols-outlined" style="
+        color: white;
+        font-size: ${size === 40 ? 18 : 14}px;
+        font-variation-settings: 'FILL' 1;
+      ">${icon}</span>
+    </div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -(size / 2)],
   });
 }
 
 const ICONS: Record<string, L.DivIcon> = {
-  scholarships: createCategoryIcon(CATEGORY_COLORS.scholarships),
-  "mental-health": createCategoryIcon(CATEGORY_COLORS["mental-health"]),
-  learning: createCategoryIcon(CATEGORY_COLORS.learning),
+  scholarships: createCircularIcon(CATEGORY_COLORS.scholarships, CATEGORY_ICONS.scholarships, 40),
+  "mental-health": createCircularIcon(CATEGORY_COLORS["mental-health"], CATEGORY_ICONS["mental-health"], 32),
+  "food-security": createCircularIcon(CATEGORY_COLORS["food-security"], CATEGORY_ICONS["food-security"], 32),
+  housing: createCircularIcon(CATEGORY_COLORS.housing, CATEGORY_ICONS.housing, 32),
+  "career-prep": createCircularIcon(CATEGORY_COLORS["career-prep"], CATEGORY_ICONS["career-prep"], 32),
 };
 
 function RecenterMap({ center }: { center: [number, number] }) {
@@ -48,7 +69,8 @@ export default function MapView({
     <MapContainer
       center={center}
       zoom={zoom}
-      className="h-full w-full rounded-xl"
+      className="h-full w-full"
+      style={{ borderRadius: "2rem" }}
       zoomControl={false}
     >
       <TileLayer
@@ -64,29 +86,25 @@ export default function MapView({
         >
           <Popup>
             <div className="min-w-[180px]">
-              <h3 className="mb-1 text-sm font-semibold text-slate-900">
+              <h3 className="mb-1 text-sm font-semibold text-on-surface font-headline">
                 {resource.title}
               </h3>
               <span
-                className="mb-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
+                className="mb-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
                 style={{
                   backgroundColor: CATEGORY_COLORS[resource.category],
                 }}
               >
-                {resource.category === "scholarships"
-                  ? "Scholarship"
-                  : resource.category === "mental-health"
-                    ? "Wellness"
-                    : "Learning"}
+                {CATEGORY_LABELS[resource.category]}
               </span>
-              <p className="mt-1 text-xs text-slate-600 line-clamp-2">
+              <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">
                 {resource.description}
               </p>
               <a
                 href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block text-xs font-medium text-scholarship hover:underline"
+                className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
               >
                 Learn More &rarr;
               </a>

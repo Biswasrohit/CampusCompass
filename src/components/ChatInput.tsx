@@ -36,10 +36,10 @@ export default function ChatInput({
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="custom-scrollbar flex-1 space-y-3 overflow-y-auto"
+        className="hide-scrollbar flex-1 space-y-3 overflow-y-auto"
       >
         {messages.length === 0 && (
-          <p className="text-center text-xs text-slate-400">
+          <p className="text-center text-xs text-on-surface-variant">
             Ask about resources near your school...
           </p>
         )}
@@ -51,8 +51,8 @@ export default function ChatInput({
             <div
               className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-700"
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-container text-on-surface"
               }`}
             >
               {msg.content}
@@ -61,14 +61,14 @@ export default function ChatInput({
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="flex gap-1 rounded-xl bg-slate-100 px-3 py-2">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-400" />
+            <div className="flex gap-1 rounded-xl bg-surface-container px-3 py-2">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-on-surface-variant" />
               <span
-                className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-400"
+                className="h-1.5 w-1.5 animate-pulse rounded-full bg-on-surface-variant"
                 style={{ animationDelay: "0.15s" }}
               />
               <span
-                className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-400"
+                className="h-1.5 w-1.5 animate-pulse rounded-full bg-on-surface-variant"
                 style={{ animationDelay: "0.3s" }}
               />
             </div>
@@ -84,21 +84,14 @@ export default function ChatInput({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask anything..."
           maxLength={500}
-          className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-scholarship focus:bg-white focus:outline-none focus:ring-1 focus:ring-scholarship/20"
+          className="min-w-0 flex-1 rounded-lg bg-surface-container border-none px-3 py-2 text-xs text-on-surface placeholder:text-on-surface-variant/60 focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary outline-none transition-all"
         />
         <button
           type="submit"
           disabled={!input.trim() || loading}
-          className="shrink-0 rounded-lg bg-slate-900 p-2 text-white transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+          className="shrink-0 rounded-lg bg-primary p-2 text-on-primary transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
         >
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-            />
-          </svg>
+          <span className="material-symbols-outlined text-sm">send</span>
         </button>
       </form>
     </div>
