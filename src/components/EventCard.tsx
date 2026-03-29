@@ -1,8 +1,10 @@
-import { Resource, CATEGORY_COLORS, CATEGORY_LABELS } from "@/types";
+import { CATEGORY_COLORS, CATEGORY_LABELS, Resource } from "@/types";
 
 interface EventCardProps {
   readonly resource: Resource;
   readonly style?: React.CSSProperties;
+  readonly isPinned?: boolean;
+  readonly onTogglePinned?: (resource: Resource) => void;
 }
 
 const PLACEHOLDER_IMAGES: readonly string[] = [
@@ -18,52 +20,83 @@ function getPlaceholderImage(id: string): string {
   return PLACEHOLDER_IMAGES[index];
 }
 
-export default function EventCard({ resource, style }: EventCardProps) {
+export default function EventCard({
+  resource,
+  style,
+  isPinned = false,
+  onTogglePinned,
+}: EventCardProps) {
   return (
-    <a
-      href={resource.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={style}
-      className="group block cursor-pointer"
-    >
-      {/* Image thumbnail */}
-      <div className="relative h-40 w-full rounded-2xl overflow-hidden mb-3">
-        <img
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          src={getPlaceholderImage(resource.id)}
-          alt={resource.title}
-        />
-        {/* Category badge */}
-        <div className="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-          <span
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: CATEGORY_COLORS[resource.category] }}
+    <div style={style} className="group block">
+      <div className="relative mb-3 overflow-hidden rounded-2xl">
+        <a href={resource.url} target="_blank" rel="noopener noreferrer">
+          <img
+            className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src={getPlaceholderImage(resource.id)}
+            alt={resource.title}
           />
-          <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider">
-            {CATEGORY_LABELS[resource.category]}
-          </span>
-        </div>
-      </div>
+        </a>
 
-      {/* Title */}
-      <h4 className="text-base font-bold text-on-surface group-hover:text-primary transition-colors leading-tight mb-1 line-clamp-2">
-        {resource.title}
-      </h4>
-
-      {/* Meta */}
-      <div className="flex items-center gap-4 text-on-surface-variant text-xs">
-        <div className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">location_on</span>
-          <span>{resource.location}</span>
-        </div>
-        {resource.date && (
-          <div className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">event</span>
-            <span>{resource.date}</span>
+        <div className="absolute right-3 top-3 flex items-center gap-2">
+          <div className="rounded-full bg-surface-container-lowest/90 px-3 py-1 shadow-sm backdrop-blur-md">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ backgroundColor: CATEGORY_COLORS[resource.category] }}
+            />
+            <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-on-surface">
+              {CATEGORY_LABELS[resource.category]}
+            </span>
           </div>
-        )}
+
+          <button
+            type="button"
+            onClick={() => onTogglePinned?.(resource)}
+            className={`rounded-full p-2 shadow-sm backdrop-blur-md transition-colors ${
+              isPinned
+                ? "bg-primary text-on-primary"
+                : "bg-surface-container-lowest/90 text-on-surface-variant hover:text-primary"
+            }`}
+            aria-label={isPinned ? "Remove pinned resource" : "Pin resource"}
+          >
+            <span
+              className="material-symbols-outlined text-base"
+              style={{ fontVariationSettings: isPinned ? "'FILL' 1" : "'FILL' 0" }}
+            >
+              push_pin
+            </span>
+          </button>
+        </div>
       </div>
-    </a>
+
+      <div className="space-y-3">
+        <a
+          href={resource.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <h4 className="mb-1 line-clamp-2 text-base font-bold leading-tight text-on-surface transition-colors group-hover:text-primary">
+            {resource.title}
+          </h4>
+        </a>
+
+        <p className="line-clamp-2 text-sm leading-6 text-on-surface-variant">
+          {resource.description}
+        </p>
+
+        <div className="flex items-center gap-4 text-xs text-on-surface-variant">
+          <div className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm">location_on</span>
+            <span>{resource.location}</span>
+          </div>
+          {resource.date && (
+            <div className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">event</span>
+              <span>{resource.date}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

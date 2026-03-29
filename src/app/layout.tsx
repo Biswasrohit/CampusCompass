@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Be_Vietnam_Pro } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+const plusJakarta = localFont({
+  src: "./fonts/GeistVF.woff",
   variable: "--font-headline",
-  weight: ["400", "500", "600", "700", "800"],
 });
 
-const beVietnam = Be_Vietnam_Pro({
-  subsets: ["latin"],
+const beVietnam = localFont({
+  src: "./fonts/GeistVF.woff",
   variable: "--font-body",
-  weight: ["300", "400", "500", "600"],
 });
 
 export const metadata: Metadata = {

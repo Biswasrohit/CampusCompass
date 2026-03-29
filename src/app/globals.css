@@ -10,11 +10,11 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: var(--font-body, "Geist"), sans-serif;
 }
 
 h1, h2, h3, .font-headline {
-  font-family: var(--font-headline, "Plus Jakarta Sans"), sans-serif;
+  font-family: var(--font-headline, "Geist"), sans-serif;
 }
 
 /* Material Symbols */
