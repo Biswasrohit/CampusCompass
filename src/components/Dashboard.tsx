@@ -10,6 +10,7 @@ import SearchBar from "./SearchBar";
 import FilterPanel from "./FilterPanel";
 import EventList from "./EventList";
 import MobileNav from "./MobileNav";
+import MapChatOverlay from "./MapChatOverlay";
 
 const MapView = dynamic(() => import("./MapView"), {
   ssr: false,
@@ -124,10 +125,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           <MobileNav
             activeFilters={activeFilters}
             onToggle={toggleFilter}
-            chatMessages={messages}
-            chatLoading={chatLoading}
-            onChatSend={sendMessage}
-            userProfile={userProfile}
           />
         </div>
       </header>
@@ -144,10 +141,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
           <FilterPanel
             activeFilters={activeFilters}
             onToggle={toggleFilter}
-            chatMessages={messages}
-            chatLoading={chatLoading}
-            onChatSend={sendMessage}
-            userProfile={userProfile}
           />
         </aside>
 
@@ -165,6 +158,14 @@ export default function Dashboard({ userProfile }: DashboardProps) {
                 <span className="material-symbols-outlined">remove</span>
               </button>
             </div>
+
+            {/* AI Chat Overlay */}
+            <MapChatOverlay
+              messages={messages}
+              loading={chatLoading}
+              onSend={sendMessage}
+              userProfile={userProfile}
+            />
           </div>
 
           {/* Mobile bottom sheet toggle */}
@@ -201,19 +202,6 @@ export default function Dashboard({ userProfile }: DashboardProps) {
         </aside>
       </main>
 
-      {/* Contextual FAB */}
-      <button className="hidden md:flex fixed bottom-8 right-[32%] z-50 bg-primary text-on-primary px-6 py-4 rounded-full shadow-2xl items-center gap-3 hover:scale-105 transition-transform active:scale-95 group">
-        <span
-          className="material-symbols-outlined"
-          style={{ fontVariationSettings: "'FILL' 1" }}
-        >
-          add_circle
-        </span>
-        <span className="font-headline font-bold">New Resource</span>
-        <div className="absolute -top-12 right-0 bg-surface-container-lowest text-primary text-[10px] px-3 py-1 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-primary/10">
-          Contribute to the community
-        </div>
-      </button>
     </div>
   );
 }

@@ -1,25 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Category, UserProfile, ChatMessage } from "@/types";
+import { Category } from "@/types";
 import FilterPanel from "./FilterPanel";
 
 interface MobileNavProps {
   readonly activeFilters: ReadonlySet<Category>;
   readonly onToggle: (category: Category) => void;
-  readonly chatMessages: readonly ChatMessage[];
-  readonly chatLoading: boolean;
-  readonly onChatSend: (message: string, profile: UserProfile) => void;
-  readonly userProfile: UserProfile;
 }
 
 export default function MobileNav({
   activeFilters,
   onToggle,
-  chatMessages,
-  chatLoading,
-  onChatSend,
-  userProfile,
 }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,7 +45,7 @@ export default function MobileNav({
         {/* Close button */}
         <div className="flex items-center justify-between px-4 py-3">
           <span className="text-sm font-semibold font-headline text-on-surface">
-            Filters & Chat
+            Filters
           </span>
           <button
             onClick={() => setIsOpen(false)}
@@ -66,10 +58,6 @@ export default function MobileNav({
         <FilterPanel
           activeFilters={activeFilters}
           onToggle={onToggle}
-          chatMessages={chatMessages}
-          chatLoading={chatLoading}
-          onChatSend={onChatSend}
-          userProfile={userProfile}
         />
       </div>
     </>
